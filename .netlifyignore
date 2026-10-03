@@ -1,0 +1,11 @@
+.env
+.env.*
+data/
+node_modules/
+.netlify/
+server.js
+package.json
+package-lock.json
+README.md
+.gitignore
+.git/

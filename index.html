@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f2f3ed">
+  <title>TZ Solutions | Inventory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--paper:#f2f3ed;--white:#fff;--ink:#19251f;--muted:#78817b;--line:#e4e7df;--green:#1e674d;--green-soft:#e7f0e9;--red:#bf5944;--red-soft:#faece7;--gold:#ad7f2d;--gold-soft:#f7f0df;--blue:#456f8b;--blue-soft:#eaf1f5;--shadow:0 18px 48px #18271b14;--sans:'DM Sans',sans-serif;--display:'Manrope',sans-serif;--mono:'IBM Plex Mono',monospace}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.45 var(--sans);min-height:100vh}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #79a990;outline-offset:2px}.app{min-height:100vh;display:grid;grid-template-columns:246px minmax(0,1fr)}
+    .sidebar{background:#19251f;color:#edf1e8;min-height:100vh;padding:25px 15px 18px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}.brand{display:flex;align-items:center;gap:11px;padding:0 11px 27px}.brand-mark{width:34px;height:34px;border-radius:10px;background:#d8e3d5;color:#1e674d;display:grid;place-items:center;font:800 17px var(--display)}.brand-name{font:700 15px var(--display);letter-spacing:-.3px}.brand-sub{font:10px var(--mono);color:#9caaa0;margin-top:2px}.nav-label{font:10px var(--mono);text-transform:uppercase;letter-spacing:1.2px;color:#829087;padding:12px 12px 8px}.nav-list{display:grid;gap:3px}.nav-btn{border:0;background:transparent;color:#aeb9b1;border-radius:7px;text-align:left;padding:9px 11px;display:flex;gap:12px;align-items:center;font-weight:500;width:100%;transition:background .18s,color .18s}.nav-btn:hover{background:#25342b;color:#fff}.nav-btn.active{background:#2b4034;color:#fff}.nav-icon{width:19px;text-align:center;font:14px var(--mono);color:#9fb4a4}.nav-btn.active .nav-icon{color:#b6d4bd}.nav-count{margin-left:auto;border-radius:10px;background:#a54f3c;color:#fff;padding:1px 7px;font:10px var(--mono)}.side-bottom{margin-top:auto}.profile{border-top:1px solid #344139;margin:14px 4px 0;padding:15px 7px 0;display:flex;gap:10px;align-items:center}.avatar{width:31px;height:31px;display:grid;place-items:center;background:#d7b98e;color:#352916;border-radius:50%;font-weight:700;font-size:11px}.profile-name{font-weight:600;font-size:12px}.profile-role{font-size:10px;color:#9caaa0;margin-top:2px}
+    .main{min-width:0;padding:0 34px 40px}.topbar{height:72px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:15px}.crumb{color:var(--muted);font-size:12px}.crumb b{color:var(--ink);font-weight:600}.top-actions{display:flex;align-items:center;gap:11px}.date-label{font:11px var(--mono);color:var(--muted)}.icon-button{height:34px;width:35px;border:1px solid var(--line);background:var(--white);border-radius:7px;color:var(--ink);position:relative}.icon-button:hover{background:var(--green-soft)}.notify-dot{position:absolute;right:6px;top:5px;width:6px;height:6px;background:var(--red);border-radius:50%;border:1px solid white}.primary-button,.secondary-button,.small-button{border:0;border-radius:6px;padding:9px 13px;font-weight:600;font-size:12px;transition:transform .15s,background .15s}.primary-button{background:var(--green);color:#fff}.primary-button:hover{background:#164f3a;transform:translateY(-1px)}.secondary-button{background:white;color:var(--ink);border:1px solid var(--line)}.secondary-button:hover,.small-button:hover{background:var(--green-soft)}.small-button{background:white;border:1px solid var(--line);padding:6px 9px;font-size:11px}.page{max-width:1420px;margin:0 auto;animation:appear .28s ease both}@keyframes appear{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}.page-heading{display:flex;align-items:flex-end;justify-content:space-between;padding:26px 0 20px;gap:16px}.eyebrow{font:10px var(--mono);letter-spacing:1.2px;text-transform:uppercase;color:var(--green);margin-bottom:7px}.page-heading h1{font:700 25px/1.2 var(--display);letter-spacing:-.8px;margin:0}.subtitle{color:var(--muted);font-size:12px;margin-top:6px}.heading-actions{display:flex;gap:8px;align-items:center}
+    .stat-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}.stat-card{background:var(--white);border:1px solid var(--line);border-radius:8px;padding:15px 16px 14px;min-height:108px;position:relative;overflow:hidden}.stat-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:11px;font-weight:500}.stat-mark{font:12px var(--mono);color:var(--green)}.stat-value{font:700 25px/1.2 var(--display);letter-spacing:-.8px;margin:11px 0 5px}.stat-foot{font-size:10px;color:var(--muted)}.trend{color:var(--green);font-weight:700}.trend.warn{color:var(--red)}.dashboard-grid{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(270px,.95fr);gap:14px;margin-top:14px}.panel{background:var(--white);border:1px solid var(--line);border-radius:8px;min-width:0}.panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:17px 18px 11px}.panel-title{font:700 13px var(--display)}.panel-desc{font-size:10px;color:var(--muted);margin-top:3px}.chart-key{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:10px}.key-line{height:2px;width:14px;background:var(--green)}.chart-wrap{height:205px;padding:0 12px 12px}.chart-wrap canvas{display:block;width:100%;height:100%}.select-compact{font-size:10px;color:var(--muted);padding:5px 7px;border:1px solid var(--line);background:white;border-radius:5px}.stock-body{padding:5px 18px 18px}.stock-score{display:flex;align-items:center;gap:17px;padding:7px 0 14px}.ring{height:88px;width:88px;position:relative;flex:none}.ring svg{width:100%;height:100%;transform:rotate(-90deg)}.ring circle{fill:none;stroke-width:8}.ring .ring-bg{stroke:#edf0e9}.ring .ring-fill{stroke:var(--green);stroke-linecap:round;stroke-dasharray:201;stroke-dashoffset:47}.ring-center{position:absolute;inset:0;display:grid;place-content:center;text-align:center}.ring-center b{font:700 19px var(--display)}.ring-center span{font-size:9px;color:var(--muted)}.stock-copy b{font:700 12px var(--display)}.stock-copy p{margin:4px 0 0;color:var(--muted);font-size:10px;line-height:1.55}.stock-legend{display:grid;gap:9px;border-top:1px solid var(--line);padding-top:13px}.legend-row{display:flex;align-items:center;gap:7px;font-size:10px;color:#5d6861}.legend-row strong{margin-left:auto;color:var(--ink);font:500 10px var(--mono)}.dot{width:7px;height:7px;border-radius:50%;background:var(--green)}.dot.low{background:var(--red)}.dot.watch{background:var(--gold)}
+    .lower-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr);gap:14px;margin-top:14px}.table-wrap{overflow:auto}.data-table{border-collapse:collapse;width:100%;white-space:nowrap}.data-table th{text-align:left;text-transform:uppercase;letter-spacing:.6px;font:9px var(--mono);color:#89918a;padding:10px 15px;border-top:1px solid #f0f1ed;border-bottom:1px solid #eef0eb}.data-table td{padding:11px 15px;border-bottom:1px solid #f0f1ed;font-size:11px}.data-table tr:last-child td{border-bottom:0}.data-table tbody tr:hover{background:#fafbf8}.product-cell{display:flex;gap:9px;align-items:center}.product-swatch{width:28px;height:28px;border-radius:6px;display:grid;place-items:center;font:10px var(--mono);font-weight:600;background:var(--green-soft);color:var(--green);flex:none}.product-name{font-weight:600;font-size:11px}.product-sku{font:9px var(--mono);color:var(--muted);margin-top:2px}.qty{font:500 11px var(--mono)}.pill{border-radius:20px;padding:3px 8px;display:inline-block;font-size:9px;font-weight:700}.pill.good{background:var(--green-soft);color:var(--green)}.pill.low{background:var(--red-soft);color:var(--red)}.pill.watch{background:var(--gold-soft);color:var(--gold)}.activity-list{padding:1px 17px 8px}.activity-row{display:grid;grid-template-columns:25px 1fr auto;gap:9px;padding:10px 0;border-bottom:1px solid #f0f1ed;align-items:start}.activity-row:last-child{border-bottom:0}.activity-icon{height:24px;width:24px;border-radius:6px;display:grid;place-items:center;background:var(--green-soft);color:var(--green);font:10px var(--mono)}.activity-icon.out{background:var(--blue-soft);color:var(--blue)}.activity-icon.alert{background:var(--red-soft);color:var(--red)}.activity-text{font-size:10px;color:#4b554e;line-height:1.45}.activity-text b{color:var(--ink)}.activity-time{font:9px var(--mono);color:#919991;white-space:nowrap}.panel-foot{border-top:1px solid #f0f1ed;padding:10px 17px;font-size:10px;color:var(--green);font-weight:600;cursor:pointer}
+    .toolbar{display:flex;align-items:center;justify-content:space-between;padding:0 0 12px;gap:10px}.search-box{position:relative;max-width:310px;width:100%}.search-box input{width:100%;height:34px;border:1px solid var(--line);border-radius:6px;background:white;padding:0 12px 0 32px;font-size:11px}.search-glyph{position:absolute;left:11px;top:8px;color:#879089;font-size:12px}.filter-group{display:flex;gap:7px}.filter-select{height:34px;border:1px solid var(--line);border-radius:6px;padding:0 9px;background:#fff;font-size:11px;color:#5c675f}.table-panel{overflow:hidden}.table-summary{padding:12px 15px;border-bottom:1px solid var(--line);font-size:10px;color:var(--muted);display:flex;justify-content:space-between}.empty-state{text-align:center;padding:42px;color:var(--muted);font-size:12px}.mini-metric{font:10px var(--mono);color:var(--muted)}.section-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:14px}.info-panel{padding:16px}.info-panel .info-label{font-size:10px;color:var(--muted)}.info-panel .info-number{font:700 22px var(--display);margin-top:8px}.info-panel .info-foot{font-size:10px;color:var(--muted);margin-top:4px}.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.settings-panel{padding:17px}.settings-panel h2{font:700 13px var(--display);margin:0 0 13px}.setting-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-top:1px solid #eff0eb;font-size:11px}.setting-row span:last-child{color:var(--muted)}
+    .modal-backdrop{position:fixed;inset:0;background:#14201888;display:grid;place-items:center;padding:18px;z-index:10;animation:appear .15s ease}.modal{width:min(480px,100%);background:white;border-radius:9px;box-shadow:var(--shadow);padding:20px}.modal-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}.modal h2{font:700 18px var(--display);margin:0}.modal .modal-subtitle{font-size:11px;color:var(--muted);margin-top:4px}.close-button{border:0;background:transparent;color:var(--muted);font-size:21px;line-height:1}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:grid;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:10px;font-weight:600;color:#59645c}.field input,.field select{height:35px;border:1px solid var(--line);border-radius:5px;padding:0 9px;background:#fff;font-size:11px;color:var(--ink)}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:19px}.toast{position:fixed;bottom:21px;right:23px;background:#19251f;color:#f7f8f3;border-radius:7px;padding:11px 15px;font-size:11px;box-shadow:var(--shadow);z-index:20;animation:appear .2s ease}.mobile-menu{display:none}
+    .signature-status{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 17px;margin-top:14px}.signature-canvas{display:block;width:100%;height:150px;border:1px solid var(--line);border-radius:6px;background:#fff;touch-action:none;cursor:crosshair}.bill-actions{display:flex;align-items:center;gap:6px}
+    .auth-screen{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;background:var(--paper)}.auth-panel{width:min(420px,100%);background:#fff;border:1px solid var(--line);border-radius:8px;padding:24px;box-shadow:var(--shadow)}.auth-panel .brand{padding:0 0 22px;color:var(--ink)}.auth-panel .brand-sub{color:var(--muted)}.auth-title{font:700 21px var(--display);margin:0}.auth-copy{font-size:12px;color:var(--muted);margin:6px 0 18px}.auth-form{display:grid;gap:12px}.auth-error{color:var(--red);font-size:11px;min-height:16px}.auth-help{font-size:10px;color:var(--muted);margin-top:14px;line-height:1.5}.side-logout{margin-left:auto;border:1px solid #526057;border-radius:5px;background:transparent;color:#d6ded8;padding:5px 8px;font-size:10px}.side-logout:hover{background:#2b4034;color:#fff}
+    body.signed-out .app{visibility:hidden;pointer-events:none}
+    .chart-key{max-width:65%;min-width:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px}.sales-legend{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:4px 9px}.sales-legend-item{display:inline-flex;align-items:center;gap:4px;color:var(--muted);font-size:9px;white-space:nowrap}.sales-legend-swatch{width:11px;height:2px;display:inline-block;flex:none}
+    @media(max-width:1050px){.app{grid-template-columns:210px minmax(0,1fr)}.main{padding:0 22px 32px}.stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-grid{grid-template-columns:minmax(0,1.4fr) minmax(240px,1fr)}}
+    @media(max-width:760px){.app{display:block}.sidebar{position:fixed;z-index:8;left:0;top:0;width:246px;transform:translateX(-100%);transition:transform .2s;height:100dvh;box-shadow:var(--shadow)}.sidebar.open{transform:translateX(0)}.mobile-menu{display:inline-grid;place-items:center;height:34px;width:35px;border:1px solid var(--line);border-radius:7px;background:white;margin-right:9px}.main{padding:0 15px 28px}.topbar{height:61px}.date-label{display:none}.page-heading{padding:22px 0 16px;align-items:flex-start}.page-heading h1{font-size:22px}.heading-actions .secondary-button{display:none}.dashboard-grid,.lower-grid{grid-template-columns:1fr}.section-grid{grid-template-columns:1fr 1fr}.settings-grid{grid-template-columns:1fr}.chart-wrap{height:185px}.stat-card{min-height:100px}.stat-value{font-size:23px}.toolbar{align-items:flex-start;flex-direction:column}.search-box{max-width:none}.filter-group{width:100%}.filter-select{flex:1;min-width:0}.page-heading .primary-button{padding:8px 10px;font-size:11px}.brand{padding-bottom:22px}}
+    @media(max-width:400px){.section-grid{grid-template-columns:1fr 1fr;gap:8px}.info-panel{padding:12px}.stat-grid{gap:8px}.stat-card{padding:12px}.stat-top{font-size:10px}.top-actions{gap:7px}.page-heading{gap:7px}.heading-actions{gap:5px}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><div class="brand-mark" style="font-size:12px">TZ</div><div><div class="brand-name">TZ Solutions</div><div class="brand-sub">INVENTORY CONTROL</div></div></div>
+    <div class="nav-label">Workspace</div>
+    <nav class="nav-list" id="navList" aria-label="Main navigation"></nav>
+    <div class="side-bottom"><div class="nav-label" id="adminLabel">Administration</div><nav class="nav-list" id="adminNav"></nav><div class="profile"><div class="avatar" id="currentAvatar">AM</div><div><div class="profile-name" id="currentName">Signed out</div><div class="profile-role" id="currentRole">Sign in required</div></div><button class="side-logout" id="logoutButton" type="button">Sign out</button></div></div>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div style="display:flex;align-items:center"><button class="mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button><div class="crumb"><span>Workspace</span> &nbsp;/&nbsp; <b id="crumbName">Overview</b></div></div><div class="top-actions"><span class="date-label" id="todayDate"></span><button class="icon-button" id="alertsButton" aria-label="View notifications">♧<span class="notify-dot"></span></button><button class="primary-button" id="quickAction">＋ <span id="quickActionLabel">New transaction</span></button><button class="secondary-button" id="headerSignOut" type="button">Sign out</button></div></header>
+    <section class="page" id="page" aria-live="polite"></section>
+  </main>
+</div>
+<div id="overlay"></div><div id="authScreen"></div><div id="toastRoot" aria-live="polite"></div>
+<script>
+(() => {
+  const seedProducts = [
+    {id:'PR-1042',name:'Ceramic pour-over set',category:'Kitchen',vendor:'Northline Supply',stock:42,reorder:18,cost:24.5,price:48,updated:'Today, 09:42'},
+    {id:'PR-1038',name:'Linen market tote',category:'Accessories',vendor:'Fieldwork Goods',stock:9,reorder:12,cost:11,price:28,updated:'Today, 09:18'},
+    {id:'PR-1031',name:'Amber glass bottle',category:'Home',vendor:'Northline Supply',stock:27,reorder:10,cost:8.25,price:22,updated:'Today, 08:56'},
+    {id:'PR-1027',name:'Oak desk organizer',category:'Office',vendor:'Juniper & Co.',stock:6,reorder:10,cost:19,price:42,updated:'Yesterday'},
+    {id:'PR-1020',name:'Woven cotton throw',category:'Home',vendor:'Fieldwork Goods',stock:31,reorder:12,cost:32,price:72,updated:'Yesterday'},
+    {id:'PR-1014',name:'Speckled stoneware mug',category:'Kitchen',vendor:'Juniper & Co.',stock:54,reorder:20,cost:9,price:24,updated:'Yesterday'},
+    {id:'PR-1009',name:'Brass reading lamp',category:'Lighting',vendor:'Northline Supply',stock:14,reorder:8,cost:38,price:89,updated:'Oct 01'},
+    {id:'PR-1002',name:'Recycled paper journal',category:'Office',vendor:'Fieldwork Goods',stock:3,reorder:15,cost:4.5,price:14,updated:'Oct 01'}
+  ];
+  const seedTransactions = [
+    {id:'TX-2087',type:'Sale',product:'Ceramic pour-over set',sku:'PR-1042',quantity:2,amount:96,date:'Today, 10:24',user:'Alex Morgan',reference:'SO-8841'},
+    {id:'TX-2086',type:'Stock In',product:'Amber glass bottle',sku:'PR-1031',quantity:24,amount:198,date:'Today, 09:51',user:'Jamie Lee',reference:'PO-3108'},
+    {id:'TX-2085',type:'Stock Out',product:'Linen market tote',sku:'PR-1038',quantity:1,amount:28,date:'Today, 09:32',user:'Alex Morgan',reference:'ADJ-142'},
+    {id:'TX-2084',type:'Refund',product:'Speckled stoneware mug',sku:'PR-1014',quantity:1,amount:24,date:'Today, 09:08',user:'Jamie Lee',reference:'RF-229'},
+    {id:'TX-2083',type:'Sale',product:'Woven cotton throw',sku:'PR-1020',quantity:1,amount:72,date:'Today, 08:47',user:'Alex Morgan',reference:'SO-8839'},
+    {id:'TX-2082',type:'Sale',product:'Amber glass bottle',sku:'PR-1031',quantity:3,amount:66,date:'Yesterday',user:'Jamie Lee',reference:'SO-8832'}
+  ];
+  const seedVendors = [
+    {name:'Northline Supply',contact:'Mira Patel',email:'orders@northline.example',products:3,lead:'4 days',status:'Active'},
+    {name:'Fieldwork Goods',contact:'Sam Rivera',email:'hello@fieldwork.example',products:3,lead:'7 days',status:'Active'},
+    {name:'Juniper & Co.',contact:'Nora Ellis',email:'trade@juniper.example',products:2,lead:'5 days',status:'Active'}
+  ];
+  const load = (key, fallback) => { try { const value=localStorage.getItem('ledgerlot-'+key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } };
+  let products=load('products',seedProducts), transactions=load('transactions',seedTransactions), audit=load('audit',[
+    {action:'Sale recorded',detail:'2 × Ceramic pour-over set',user:'Alex Morgan',time:'Today, 10:24'},
+    {action:'Stock received',detail:'24 × Amber glass bottle',user:'Jamie Lee',time:'Today, 09:51'},
+    {action:'Low-stock alert sent',detail:'Recycled paper journal → Fieldwork Goods',user:'System',time:'Today, 09:15'},
+    {action:'Inventory adjusted',detail:'Linen market tote · −1 unit',user:'Alex Morgan',time:'Today, 09:32'},
+    {action:'Refund approved',detail:'Speckled stoneware mug · RF-229',user:'Jamie Lee',time:'Today, 09:08'}
+  ]), vendors=load('vendors',seedVendors), bills=load('bills',[]);
+  let active='Overview', filter='All', search='', toastTimer, inventorySyncTimer, gmailConfigured=false, currentUser=null, availableRoles=[], serverAuthEvents=[], authAuditLoaded=false, authAuditLoading=false, ownerSignature=load('owner-signature',''), ownerSignatureDate=load('owner-signature-date','');
+  const navItems=[['Overview','⌂'],['Products','▦'],['Stock In','↓'],['Stock Out','↑'],['Sales','↗'],['Refunds','↩'],['Vendors','◇'],['Vendor Bills','▧'],['Day-End','≡'],['Reports','▤']];
+  const adminItems=[['Users & Roles','♙'],['Notifications','◎'],['Audit Log','◷']];
+  const roleAccess={
+    Administrator:new Set([...navItems.map(([name])=>name),...adminItems.map(([name])=>name)]),
+    Manager:new Set([...navItems.map(([name])=>name),'Notifications','Audit Log']),
+    Staff:new Set(['Overview','Products','Stock In','Stock Out','Sales'])
+  };
+  const $=id=>document.getElementById(id), money=value=>'$'+Number(value||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}), escapeHtml=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const save=()=>{localStorage.setItem('ledgerlot-products',JSON.stringify(products));localStorage.setItem('ledgerlot-transactions',JSON.stringify(transactions));localStorage.setItem('ledgerlot-audit',JSON.stringify(audit));localStorage.setItem('ledgerlot-vendors',JSON.stringify(vendors));localStorage.setItem('ledgerlot-bills',JSON.stringify(bills));queueInventorySync();};
+  function queueInventorySync(){
+    if(location.protocol==='file:')return;
+    clearTimeout(inventorySyncTimer);
+    inventorySyncTimer=setTimeout(syncInventory,250);
+  }
+  async function syncInventory(){
+    if(location.protocol==='file:')return;
+    try{
+      const response=await fetch('/api/inventory',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({products,vendors})});
+      const result=await response.json();
+      if(response.ok){gmailConfigured=Boolean(result.configured);updateEmailDeliveryStatus();}
+    }catch{}
+  }
+  async function refreshGmailStatus(){
+    if(location.protocol==='file:')return;
+    try{
+      const response=await fetch('/api/status');
+      const result=await response.json();
+      gmailConfigured=Boolean(result.gmailConfigured);
+      updateEmailDeliveryStatus();
+    }catch{gmailConfigured=false;updateEmailDeliveryStatus();}
+  }
+  function updateEmailDeliveryStatus(){
+    if(active!=='Notifications')return;
+    const emailCard=[...document.querySelectorAll('.stat-card')].find(card=>card.innerText.includes('Email delivery'));
+    if(emailCard){emailCard.querySelector('.stat-value').textContent=gmailConfigured?'Gmail active':'Gmail setup required';emailCard.querySelector('.stat-foot').textContent=gmailConfigured?'Expiry notices send automatically':'Configure Gmail in the local .env file';}
+    const emailPreference=[...document.querySelectorAll('.setting-row')].find(row=>row.innerText.includes('Automatically email vendor at reorder point')||row.innerText.includes('stock and expiry alerts'));
+    if(emailPreference){emailPreference.firstElementChild.textContent=gmailConfigured?'Automatically send stock and expiry alerts':'Automatically queue stock and expiry alerts';emailPreference.lastElementChild.innerHTML=`<span class="mini-metric">${gmailConfigured?'Gmail active':'Manual send'}</span>`;}
+  }
+  const shortDate=()=>new Intl.DateTimeFormat('en-US',{weekday:'short',month:'short',day:'numeric'}).format(new Date());
+  function logAudit(action,detail,user=currentUser?.name||'System'){
+    const time='Today, '+new Intl.DateTimeFormat('en-US',{hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());
+    const transactionType={'Stock received':'Stock In','Inventory adjusted':'Stock Out','Sale recorded':'Sale','Refund approved':'Refund'}[action];
+    if(transactionType&&transactions[0]?.type===transactionType)transactions[0].user=user;
+    audit.unshift({action,detail,user,time});
+    if(['Stock received','Inventory adjusted','Sale recorded','Refund approved','Product created'].includes(action)){
+      const movedProduct=products.find(product=>detail.includes(product.name));
+      if(movedProduct){
+        if(movedProduct.stock<=movedProduct.reorder&&!movedProduct.alerted){
+          movedProduct.alerted=true;
+          audit.unshift({action:'Low-stock alert queued',detail:`${movedProduct.name} → ${movedProduct.vendor}`,user:'System',time});
+        }else if(movedProduct.stock>movedProduct.reorder){
+          movedProduct.alerted=false;
+        }
+      }
+    }
+    audit=audit.slice(0,50);
+    save();
+  }
+  function productStatus(product){return product.stock<=product.reorder?'Low stock':product.stock<=product.reorder*1.5?'Watch':'In stock';}
+  function daysUntilExpiry(expiryDate){if(!expiryDate)return Infinity;const expiry=new Date(`${expiryDate}T00:00:00`),today=new Date();if(Number.isNaN(expiry.getTime()))return Infinity;expiry.setHours(0,0,0,0);today.setHours(0,0,0,0);return Math.round((expiry-today)/86400000);}
+  function expiryStatus(product){if(!product.expiryDate)return 'Not set';const days=daysUntilExpiry(product.expiryDate);return days<0?'Expired':days<=15?'Expiring soon':'Valid';}
+  function refreshExpiryAlerts(){
+    let changed=false;
+    products.forEach(product=>{
+      if(!product.expiryDate||product.stock<=0){if(product.expiryAlertKey){product.expiryAlertKey='';changed=true;}return;}
+      const days=daysUntilExpiry(product.expiryDate);
+      if(days>15){if(product.expiryAlertKey){product.expiryAlertKey='';changed=true;}return;}
+      const state=days<0?'expired':'upcoming',key=`${product.expiryDate}:${state}`;
+      if(product.expiryAlertKey!==key){
+        product.expiryAlertKey=key;
+        changed=true;
+        logAudit(state==='expired'?'Product expired':'Product expiring within 15 days',`${product.name} · ${product.expiryDate} · ${product.vendor}`,'System');
+      }
+    });
+    if(changed)save();
+    return changed;
+  }
+  function isExpiryAlert(product){return Boolean(product.expiryDate)&&product.stock>0&&daysUntilExpiry(product.expiryDate)<=15;}
+  function pill(status){const cls=status==='Low stock'||status==='Pending'||status==='Expired'?'low':status==='Watch'||status==='Scheduled'||status==='Expiring soon'?'watch':'good';return `<span class="pill ${cls}">${escapeHtml(status)}</span>`;}
+  function navMarkup(items){const alertCount=products.filter(product=>product.stock<=product.reorder||isExpiryAlert(product)).length;return items.map(([name,icon])=>`<button class="nav-btn ${active===name?'active':''}" data-nav="${escapeHtml(name)}"><span class="nav-icon">${icon}</span><span>${escapeHtml(name)}</span>${name==='Notifications'&&alertCount?'<span class="nav-count">'+alertCount+'</span>':''}</button>`).join('');}
+  function canAccessPage(name){return Boolean(currentUser&&roleAccess[currentUser.role]?.has(name));}
+  function applyLoggedUser(user){
+    currentUser=user;
+    $('currentName').textContent=user.name;
+    $('currentRole').textContent=user.role;
+    $('currentAvatar').textContent=user.name.split(/\s+/).map(part=>part[0]).join('').slice(0,2).toUpperCase();
+  }
+  function setNav(){
+    const allowed=roleAccess[currentUser?.role]||new Set();
+    const workspaceItems=navItems.filter(([name])=>allowed.has(name));
+    const administrationItems=adminItems.filter(([name])=>allowed.has(name));
+    $('navList').innerHTML=navMarkup(workspaceItems);
+    $('adminNav').innerHTML=navMarkup(administrationItems);
+    $('adminLabel').hidden=administrationItems.length===0;
+    document.querySelectorAll('[data-nav]').forEach(button=>button.addEventListener('click',()=>navigate(button.dataset.nav)));
+  }
+  function navigate(name){if(!canAccessPage(name))return;active=name;filter='All';search='';$('crumbName').textContent=name;setNav();render();$('sidebar').classList.remove('open');}
+  function heading(title,subtitle,action=''){
+      const currentDate=new Intl.DateTimeFormat('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}).format(new Date());
+      const pageTitle=title==='Good morning, Alex'?`Good morning, ${escapeHtml(currentUser?.name||'Alex')}`:title;
+      return `<div class="page-heading"><div><div class="eyebrow">${active==='Overview'?currentDate:'Inventory workspace'}</div><h1>${pageTitle}</h1><div class="subtitle">${subtitle}</div></div>${action?`<div class="heading-actions">${action}</div>`:''}</div>`;
+    }
+  function stats(items){return `<div class="stat-grid">${items.map(([label,value,foot,mark,warning])=>`<article class="stat-card"><div class="stat-top"><span>${label}</span><span class="stat-mark">${mark}</span></div><div class="stat-value">${value}</div><div class="stat-foot">${warning?'<span class="trend warn">'+warning+'</span>':foot}</div></article>`).join('')}</div>`;}
+  function productRows(list){return list.map(p=>`<tr><td><div class="product-cell"><div class="product-swatch">${escapeHtml(p.category.slice(0,2).toUpperCase())}</div><div><div class="product-name">${escapeHtml(p.name)}</div><div class="product-sku">${escapeHtml(p.id)} · Expires ${escapeHtml(p.expiryDate||'not set')}</div>${p.expiryDate?pill(expiryStatus(p)):''}${active==='Products'?`<br><button class="small-button" data-set-expiry="${escapeHtml(p.id)}">Set expiry</button>`:''}</div></div></td><td>${escapeHtml(p.category)}</td><td class="qty">${p.stock}</td><td class="qty">${p.reorder}</td><td>${escapeHtml(p.vendor)}</td><td>${pill(productStatus(p))}</td><td>${money(p.price)}</td></tr>`).join('');}
+  function transactionRows(list){return list.map(t=>`<tr><td class="qty">${escapeHtml(t.id)}</td><td>${pill(t.type==='Sale'?'Completed':t.type==='Refund'?'Refunded':t.type)}</td><td><div class="product-name">${escapeHtml(t.product)}</div><div class="product-sku">${escapeHtml(t.sku)}</div></td><td class="qty">${t.quantity}</td><td>${money(t.amount)}</td><td>${escapeHtml(t.reference)}</td><td>${escapeHtml(t.date)}</td><td>${escapeHtml(t.user)}</td></tr>`).join('');}
+  function activityRows(list){return list.map((a,i)=>`<div class="activity-row"><div class="activity-icon ${i===2?'alert':i===0?'out':''}">${i===0?'↗':i===1?'↓':i===2?'!':'↩'}</div><div class="activity-text"><b>${escapeHtml(a.action)}</b><br>${escapeHtml(a.detail)}</div><div class="activity-time">${escapeHtml(a.time.replace('Today, ',''))}</div></div>`).join('');}
+  function renderDashboard(){const stockValue=products.reduce((sum,p)=>sum+p.stock*p.cost,0), low=products.filter(p=>p.stock<=p.reorder).length, sales=transactions.filter(t=>t.type==='Sale').reduce((sum,t)=>sum+t.amount,0);return `${heading('Good morning, Alex','Here is your inventory at a glance.')} ${stats([['Inventory value',money(stockValue),'Across '+products.length+' active products','◈'],['Sales today',money(sales||1248),'↑ 12.8% vs. yesterday','↗'],['Units on hand',products.reduce((sum,p)=>sum+p.stock,0).toLocaleString(),'Across all locations','▦'],['Needs reordering',String(low),low?'Review items below reorder point':'Everything is healthy','!',low?low+' items below threshold':null]])}<div class="dashboard-grid"><section class="panel"><div class="panel-head"><div><div class="panel-title">Sales performance</div><div class="panel-desc">Net sales · last 7 days</div></div><div class="chart-key"><i class="key-line"></i> This week <select class="select-compact" id="chartPeriod" aria-label="Chart period"><option>7 days</option><option>30 days</option></select></div></div><div class="chart-wrap"><canvas id="salesChart" aria-label="Sales chart"></canvas></div></section><section class="panel"><div class="panel-head"><div><div class="panel-title">Stock health</div><div class="panel-desc">Current inventory distribution</div></div><span class="mini-metric">${products.length} SKUs</span></div><div class="stock-body"><div class="stock-score"><div class="ring"><svg viewBox="0 0 76 76"><circle class="ring-bg" cx="38" cy="38" r="32"></circle><circle class="ring-fill" cx="38" cy="38" r="32" style="stroke-dasharray:201;stroke-dashoffset:${201-(201*(products.filter(p=>p.stock>p.reorder*1.5).length/Math.max(products.length,1)))}"></circle></svg><div class="ring-center"><b>${Math.round(products.filter(p=>p.stock>p.reorder*1.5).length/Math.max(products.length,1)*100)}%</b><span>healthy</span></div></div><div class="stock-copy"><b>${low?low+' items need attention':'All items in range'}</b><p>Alerts are triggered automatically when on-hand quantity reaches reorder level.</p></div></div><div class="stock-legend"><div class="legend-row"><i class="dot"></i> Healthy stock <strong>${products.filter(p=>p.stock>p.reorder*1.5).length}</strong></div><div class="legend-row"><i class="dot watch"></i> Watch list <strong>${products.filter(p=>p.stock>p.reorder&&p.stock<=p.reorder*1.5).length}</strong></div><div class="legend-row"><i class="dot low"></i> Reorder now <strong>${low}</strong></div></div></div></section></div><div class="lower-grid"><section class="panel"><div class="panel-head"><div><div class="panel-title">Low stock watch</div><div class="panel-desc">Items at or below reorder point</div></div><button class="small-button" data-nav="Products">View inventory →</button></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Product</th><th>Category</th><th>On hand</th><th>Reorder at</th><th>Vendor</th><th>Status</th></tr></thead><tbody>${productRows(products.filter(p=>p.stock<=p.reorder).slice(0,5))||'<tr><td colspan="6" class="empty-state">No low-stock items.</td></tr>'}</tbody></table></div></section><section class="panel"><div class="panel-head"><div><div class="panel-title">Recent activity</div><div class="panel-desc">Latest inventory events</div></div></div><div class="activity-list">${activityRows(audit.slice(0,4))}</div><div class="panel-foot" data-nav="Audit Log">View audit log →</div></section></div>`;}
+  function chart(){
+    const canvas=$('salesChart');
+    if(!canvas)return;
+    const rect=canvas.getBoundingClientRect(),ratio=window.devicePixelRatio||1;
+    canvas.width=rect.width*ratio;
+    canvas.height=rect.height*ratio;
+    const ctx=canvas.getContext('2d');
+    ctx.scale(ratio,ratio);
+    const width=rect.width,height=rect.height,padding={left:39,right:9,top:15,bottom:25};
+    const period=$('chartPeriod')?.value;
+    const pointCount=period==='30 days'?30:7;
+    const today=new Date();
+    today.setHours(0,0,0,0);
+    const dayMs=24*60*60*1000;
+    const sales=transactions.filter(transaction=>transaction.type==='Sale');
+    const users=[...new Set(sales.map(transaction=>transaction.user||'Unknown'))];
+    const byUser=new Map(users.map(user=>[user,Array(pointCount).fill(0)]));
+    sales.forEach(transaction=>{
+      const dateText=String(transaction.date||'');
+      let daysAgo;
+      if(dateText.startsWith('Today'))daysAgo=0;
+      else if(dateText.startsWith('Yesterday'))daysAgo=1;
+      else{
+        const parsed=new Date(`${dateText}, ${new Date().getFullYear()}`);
+        parsed.setHours(0,0,0,0);
+        daysAgo=Math.round((today-parsed)/dayMs);
+      }
+      const index=pointCount-1-daysAgo;
+      if(Number.isFinite(index)&&index>=0&&index<pointCount)byUser.get(transaction.user||'Unknown')[index]+=Number(transaction.amount)||0;
+    });
+    const total=Array(pointCount).fill(0);
+    byUser.forEach(values=>values.forEach((value,index)=>total[index]+=value));
+    const colors=['#bf5944','#456f8b','#ad7f2d','#647554','#8a6380','#4e8a80'];
+    const series=[{name:'All sales',values:total,color:'#1e674d',total:true},...users.map((user,index)=>({name:user,values:byUser.get(user),color:colors[index%colors.length]}))];
+    const maxValue=Math.max(1,...total);
+    const max=Math.ceil(maxValue/4)*4;
+    const x=index=>padding.left+index*(width-padding.left-padding.right)/(pointCount-1);
+    const y=value=>padding.top+(max-value)*(height-padding.top-padding.bottom)/max;
+    ctx.font='9px IBM Plex Mono, monospace';
+    ctx.fillStyle='#89918a';
+    ctx.strokeStyle='#edf0eb';
+    ctx.lineWidth=1;
+    for(let tick=0;tick<=4;tick++){
+      const value=max*tick/4,position=y(value);
+      ctx.beginPath();ctx.moveTo(padding.left,position);ctx.lineTo(width-padding.right,position);ctx.stroke();
+      ctx.fillText('$'+Math.round(value).toLocaleString('en-US'),2,position+3);
+    }
+    const gradient=ctx.createLinearGradient(0,padding.top,0,height-padding.bottom);
+    gradient.addColorStop(0,'#1e674d33');
+    gradient.addColorStop(1,'#1e674d00');
+    ctx.beginPath();
+    total.forEach((value,index)=>index?ctx.lineTo(x(index),y(value)):ctx.moveTo(x(index),y(value)));
+    ctx.lineTo(x(pointCount-1),height-padding.bottom);ctx.lineTo(x(0),height-padding.bottom);ctx.closePath();
+    ctx.fillStyle=gradient;ctx.fill();
+    series.forEach(line=>{
+      ctx.beginPath();
+      line.values.forEach((value,index)=>index?ctx.lineTo(x(index),y(value)):ctx.moveTo(x(index),y(value)));
+      ctx.strokeStyle=line.color;ctx.lineWidth=line.total?2.5:1.8;ctx.stroke();
+      line.values.forEach((value,index)=>{ctx.beginPath();ctx.arc(x(index),y(value),line.total?2.7:2.2,0,Math.PI*2);ctx.fillStyle=line.color;ctx.fill();});
+    });
+    const labelIndexes=pointCount===7?[0,1,2,3,4,5,6]:[0,5,10,15,20,25,29];
+    labelIndexes.forEach(index=>{
+      const date=new Date(today);date.setDate(today.getDate()-(pointCount-1-index));
+      const label=pointCount===7?new Intl.DateTimeFormat('en-US',{weekday:'short'}).format(date):new Intl.DateTimeFormat('en-US',{month:'numeric',day:'numeric'}).format(date);
+      ctx.fillStyle='#89918a';ctx.fillText(label,x(index)-8,height-6);
+    });
+    const controls=document.querySelector('.chart-key'),periodControl=$('chartPeriod');
+    if(controls&&periodControl){
+      const legend=document.createElement('div');
+      legend.className='sales-legend';
+      legend.innerHTML=series.map(line=>`<span class="sales-legend-item"><i class="sales-legend-swatch" style="background:${line.color}"></i>${escapeHtml(line.name)}</span>`).join('');
+      controls.innerHTML='';
+      controls.append(legend,periodControl);
+    }
+    canvas.dataset.series=JSON.stringify(series.map(line=>line.name));
+  }
+  function modulePage(){const productModules=['Products','Stock In','Stock Out'];if(productModules.includes(active)){const title=active==='Products'?'Product inventory':active==='Stock In'?'Stock received':'Stock adjustments';const subtitle=active==='Products'?'Track quantities, reorder points, and product value.':active==='Stock In'?'Record supplier deliveries and update available stock.':'Record write-offs, transfers, and other inventory reductions.';const list=active==='Products'?products:products.filter(p=>active==='Stock In'?p.stock<=p.reorder:p.stock>0);return `${heading(title,subtitle,`<button class="primary-button" data-action="${active==='Products'?'product':active==='Stock In'?'stockin':'stockout'}">＋ ${active==='Products'?'Add product':active==='Stock In'?'Receive stock':'Record adjustment'}</button>`)}${stats([['Products',products.length,'Active SKUs','▦'],['Units on hand',products.reduce((s,p)=>s+p.stock,0),'Across all products','↓'],['Inventory value',money(products.reduce((s,p)=>s+p.stock*p.cost,0)),'At unit cost','◈'],['Reorder alerts',products.filter(p=>p.stock<=p.reorder).length,'Vendor notification ready','!']])}<div class="toolbar" style="margin-top:16px"><label class="search-box"><span class="search-glyph">⌕</span><input id="tableSearch" placeholder="Search products or SKU" value="${escapeHtml(search)}"></label><div class="filter-group"><select class="filter-select" id="stockFilter"><option>All stock levels</option><option>Low stock</option><option>In stock</option></select><select class="filter-select" id="categoryFilter"><option>All categories</option>${[...new Set(products.map(p=>p.category))].map(c=>`<option>${escapeHtml(c)}</option>`).join('')}</select></div></div><section class="panel table-panel"><div class="table-summary"><span id="rowCount">${list.length} products</span><span>Last synced just now</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Product</th><th>Category</th><th>On hand</th><th>Reorder point</th><th>Vendor</th><th>Status</th><th>Price</th></tr></thead><tbody id="productTableBody">${productRows(list)}</tbody></table></div></section>`;}
+    if(['Sales','Refunds'].includes(active)){const isRefund=active==='Refunds';const list=transactions.filter(t=>t.type===(isRefund?'Refund':'Sale'));return `${heading(isRefund?'Refunds':'Sales',isRefund?'Review returned items and approved refunds.':'Review completed sales and customer transactions.',`<button class="primary-button" data-action="${isRefund?'refund':'sale'}">＋ ${isRefund?'Process refund':'New sale'}</button>`)}${stats(isRefund?[['Refunds this month',list.length,'Processed transactions','↩'],['Refund value',money(list.reduce((s,t)=>s+t.amount,0)),'Returned to customers','−'],['Items returned',list.reduce((s,t)=>s+t.quantity,0),'Units back in stock','▦']]:[['Sales today',money(list.reduce((s,t)=>s+t.amount,0)),'Net completed sales','↗'],['Transactions',list.length,'All recorded sales','≡'],['Units sold',list.reduce((s,t)=>s+t.quantity,0),'Across recorded sales','↓']])}<div class="toolbar" style="margin-top:16px"><label class="search-box"><span class="search-glyph">⌕</span><input id="tableSearch" placeholder="Search transactions" value="${escapeHtml(search)}"></label><span class="mini-metric">${list.length} ${isRefund?'refunds':'sales'}</span></div><section class="panel table-panel"><div class="table-wrap"><table class="data-table"><thead><tr><th>Transaction</th><th>Status</th><th>Product</th><th>Qty</th><th>Amount</th><th>Reference</th><th>Date</th><th>Processed by</th></tr></thead><tbody id="transactionTableBody">${transactionRows(list)}</tbody></table></div></section>`;}
+    if(active==='Vendors'){return `${heading('Vendor directory','Supplier contacts and replenishment status.','<button class="primary-button" data-action="vendor">＋ Add vendor</button>')}${stats([['Active vendors',vendors.length,'Approved suppliers','◇'],['Items to reorder',products.filter(p=>p.stock<=p.reorder).length,'Across '+new Set(products.filter(p=>p.stock<=p.reorder).map(p=>p.vendor)).size+' vendors','!'],['Open purchase orders','3','Awaiting delivery','↓']])}<div class="toolbar" style="margin-top:16px"><label class="search-box"><span class="search-glyph">⌕</span><input id="tableSearch" placeholder="Search vendors" value="${escapeHtml(search)}"></label><button class="secondary-button" data-action="notify">Send low-stock notices</button></div><section class="panel table-panel"><div class="table-wrap"><table class="data-table"><thead><tr><th>Vendor</th><th>Contact</th><th>Email</th><th>Products</th><th>Lead time</th><th>Status</th><th>Action</th></tr></thead><tbody id="vendorTableBody">${vendors.map(v=>`<tr><td class="product-name">${escapeHtml(v.name)}</td><td>${escapeHtml(v.contact)}</td><td>${escapeHtml(v.email)}</td><td class="qty">${v.products}</td><td>${escapeHtml(v.lead)}</td><td>${pill(v.status)}</td><td><button class="small-button" data-vendor="${escapeHtml(v.name)}">Email vendor</button></td></tr>`).join('')}</tbody></table></div></section>`;}
+    if(active==='Day-End'){const sales=transactions.filter(t=>t.type==='Sale').reduce((s,t)=>s+t.amount,0),refund=transactions.filter(t=>t.type==='Refund').reduce((s,t)=>s+t.amount,0);return `${heading('Day-end accounting','Daily sales, refunds, and inventory movement in one place.','<button class="primary-button" data-action="close-day">Close today</button>')}${stats([['Gross sales',money(sales),'Completed transactions','↗'],['Refunds',money(refund),'Customer returns','↩'],['Net sales',money(sales-refund),'Gross sales less refunds','◈'],['Transactions',transactions.length,'All activity today','≡']])}<div class="lower-grid" style="margin-top:16px"><section class="panel"><div class="panel-head"><div><div class="panel-title">Daily reconciliation</div><div class="panel-desc">Today · USD</div></div><span class="pill good">Open</span></div><div class="settings-panel"><div class="setting-row"><span>Sales revenue</span><b>${money(sales)}</b></div><div class="setting-row"><span>Refunds &amp; returns</span><b>− ${money(refund)}</b></div><div class="setting-row"><span>Net revenue</span><b>${money(sales-refund)}</b></div><div class="setting-row"><span>Stock received</span><b>${transactions.filter(t=>t.type==='Stock In').reduce((s,t)=>s+t.quantity,0)} units</b></div><div class="setting-row"><span>Stock adjusted out</span><b>${transactions.filter(t=>t.type==='Stock Out').reduce((s,t)=>s+t.quantity,0)} units</b></div></div></section><section class="panel"><div class="panel-head"><div><div class="panel-title">Close-of-day checklist</div><div class="panel-desc">Review before finalizing</div></div></div><div class="settings-panel"><div class="setting-row"><span>Transactions reconciled</span>${pill('Complete')}</div><div class="setting-row"><span>Refunds reviewed</span>${pill('Complete')}</div><div class="setting-row"><span>Low-stock items reviewed</span>${pill(products.some(p=>p.stock<=p.reorder)?'Pending':'Complete')}</div><div class="setting-row"><span>Audit log up to date</span>${pill('Complete')}</div></div></section></div>`;}
+    if(active==='Users & Roles'){return `${heading('Users & roles','Manage access and protect sensitive operations.','<button class="primary-button" data-action="user">＋ Invite user</button>')}<div class="section-grid" style="margin-top:8px">${[['Users','3','2 active now'],['Roles','3','Administrator · Manager · Staff'],['Access policy','Role-based','Least-privilege access']].map(a=>`<article class="panel info-panel"><div class="info-label">${a[0]}</div><div class="info-number">${a[1]}</div><div class="info-foot">${a[2]}</div></article>`).join('')}</div><div class="settings-grid"><section class="panel settings-panel"><h2>Team members</h2>${[['Alex Morgan','Administrator','alex@ledgerlot.example'],['Jamie Lee','Manager','jamie@ledgerlot.example'],['Taylor Chen','Staff','taylor@ledgerlot.example']].map(([n,r,e])=>`<div class="setting-row"><span><b>${n}</b><br><small style="color:var(--muted)">${e}</small></span><span>${r}</span></div>`).join('')}</section><section class="panel settings-panel"><h2>Role permissions</h2>${[['Administrator','Full system access'],['Manager','Inventory, sales, reports'],['Staff','Stock movement, sales']].map(([n,d])=>`<div class="setting-row"><span><b>${n}</b></span><span>${d}</span></div>`).join('')}</section></div>`;}
+    if(active==='Notifications'){const lowProducts=products.filter(p=>p.stock<=p.reorder);return `${heading('Notifications','Automated vendor alerts and system notices.','<button class="primary-button" data-action="notify">Send low-stock notices</button>')}${stats([['Low-stock alerts',lowProducts.length,'Products below reorder point','!'],['Vendors notified',new Set(lowProducts.map(p=>p.vendor)).size,'Eligible suppliers','◇'],['Email delivery','Configured','Vendor notifications enabled','✉']])}<section class="panel table-panel" style="margin-top:16px"><div class="panel-head"><div><div class="panel-title">Reorder alerts</div><div class="panel-desc">Threshold-based vendor notifications</div></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Product</th><th>On hand</th><th>Reorder at</th><th>Vendor</th><th>Contact</th><th>Status</th></tr></thead><tbody>${lowProducts.map(p=>{const v=vendors.find(x=>x.name===p.vendor);return `<tr><td><div class="product-name">${escapeHtml(p.name)}</div><div class="product-sku">${escapeHtml(p.id)}</div></td><td class="qty">${p.stock}</td><td class="qty">${p.reorder}</td><td>${escapeHtml(p.vendor)}</td><td>${escapeHtml(v?.email||'No vendor email')}</td><td>${pill('Pending')}</td></tr>`;}).join('')||'<tr><td colspan="6" class="empty-state">No products need reordering.</td></tr>'}</tbody></table></div></section><section class="panel settings-panel" style="margin-top:14px"><h2>Email preferences</h2><div class="setting-row"><span>Automatically email vendor at reorder point</span><span>${pill('Enabled')}</span></div><div class="setting-row"><span>Daily inventory summary</span><span>${pill('Enabled')}</span></div></section>`;}
+    if(active==='Reports'){return `${heading('Reports & exports','Operational, financial, and inventory reporting.')}<div class="section-grid" style="margin-top:8px">${[['Inventory valuation','Current quantity × unit cost','Export inventory'],['Sales summary','Sales and refunds by transaction','Export transactions'],['Stock movement','Receipts, adjustments, and returns','Export movement']].map((r,i)=>`<article class="panel info-panel"><div class="info-label">REPORT 0${i+1}</div><div class="info-number" style="font-size:16px">${r[0]}</div><div class="info-foot" style="margin:7px 0 15px">${r[1]}</div><button class="secondary-button" data-export="${i}">${r[2]} ↓</button></article>`).join('')}</div><section class="panel settings-panel"><h2>Report contents</h2><div class="setting-row"><span>Inventory value</span><b>${money(products.reduce((s,p)=>s+p.stock*p.cost,0))}</b></div><div class="setting-row"><span>Sales recorded</span><b>${transactions.filter(t=>t.type==='Sale').length} transactions</b></div><div class="setting-row"><span>Current low-stock products</span><b>${products.filter(p=>p.stock<=p.reorder).length} items</b></div></section>`;}
+    if(active==='Audit Log'){return `${heading('Audit log','A traceable record of important system activity.','<button class="secondary-button" data-export="audit">Export log ↓</button>')}<div class="toolbar" style="margin-top:2px"><label class="search-box"><span class="search-glyph">⌕</span><input id="tableSearch" placeholder="Search activity" value="${escapeHtml(search)}"></label><span class="mini-metric">${audit.length} events · retained locally</span></div><section class="panel table-panel"><div class="table-wrap"><table class="data-table"><thead><tr><th>Activity</th><th>Details</th><th>User</th><th>Timestamp</th></tr></thead><tbody id="auditTableBody">${audit.map(a=>`<tr><td class="product-name">${escapeHtml(a.action)}</td><td>${escapeHtml(a.detail)}</td><td>${escapeHtml(a.user)}</td><td class="qty">${escapeHtml(a.time)}</td></tr>`).join('')}</tbody></table></div></section>`;}
+    return renderDashboard();
+  }
+  function renderVendorBillsPage(){
+    const openBills=bills.filter(bill=>bill.status==='Unpaid');
+    const payable=openBills.reduce((sum,bill)=>sum+bill.amount,0);
+    const paid=bills.filter(bill=>bill.status==='Paid').reduce((sum,bill)=>sum+bill.amount,0);
+    const rows=bills.map(bill=>`<tr><td class="qty">${escapeHtml(bill.id)}</td><td><div class="product-name">${escapeHtml(bill.invoice)}</div><div class="product-sku">${escapeHtml(bill.po||'No PO reference')}</div></td><td>${escapeHtml(bill.vendor)}</td><td>${escapeHtml(bill.billDate)}</td><td>${escapeHtml(bill.dueDate)}</td><td>${money(bill.amount)}</td><td>${pill(bill.status)}</td><td><div class="bill-actions"><button class="small-button" data-bill-copy="${escapeHtml(bill.id)}" ${ownerSignature?'':'disabled'}>Bill copy</button>${bill.status==='Unpaid'?`<button class="small-button" data-mark-bill-paid="${escapeHtml(bill.id)}">Mark paid</button>`:''}</div></td></tr>`).join('');
+    return `${heading('Vendor bills','Manage supplier invoices and outstanding payables.','<button class="primary-button" data-action="stockin">＋ Receive stock &amp; record bill</button>')}${stats([['Open bills',openBills.length,'Awaiting payment','▧'],['Accounts payable',money(payable),'Outstanding vendor balance','−'],['Paid bills',money(paid),'Recorded payments','✓'],['Total bills',bills.length,'Vendor invoices on file','≡']])}<section class="panel table-panel" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>Bill ID</th><th>Invoice / PO</th><th>Vendor</th><th>Bill date</th><th>Due date</th><th>Amount</th><th>Status</th><th>Action</th></tr></thead><tbody>${rows||'<tr><td colspan="8" class="empty-state">No vendor bills yet. Record a bill when receiving stock.</td></tr>'}</tbody></table></div></section>`;
+  }
+  function renderOwnerSignaturePanel(){
+    const status=ownerSignature?`Owner signature saved ${ownerSignatureDate?`on ${escapeHtml(new Date(ownerSignatureDate).toLocaleString())}`:''}`:'No owner signature saved';
+    return `<section class="panel signature-status"><div><div class="panel-title">Owner digital signature</div><div class="panel-desc">${status}</div></div><button class="secondary-button" data-owner-signature>${ownerSignature?'Update signature':'Set owner signature'}</button></section>`;
+  }
+  function renderBillLedger(){
+    const payable=bills.filter(bill=>bill.status==='Unpaid').reduce((sum,bill)=>sum+bill.amount,0);
+    const entries=bills.flatMap(bill=>{
+      const rows=[{date:bill.billDate,reference:bill.invoice,vendor:bill.vendor,debit:'Inventory',credit:'Accounts Payable',amount:bill.amount,type:'Vendor bill'}];
+      if(bill.status==='Paid')rows.push({date:bill.paidDate||bill.billDate,reference:bill.invoice,vendor:bill.vendor,debit:'Accounts Payable',credit:'Cash',amount:bill.amount,type:'Bill payment'});
+      return rows;
+    });
+    return `<section class="panel table-panel" style="margin-top:14px"><div class="panel-head"><div><div class="panel-title">Vendor bill ledger</div><div class="panel-desc">Double-entry postings from stock receipts and bill payments</div></div><span class="mini-metric">Open payables ${money(payable)}</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Type</th><th>Date</th><th>Invoice</th><th>Vendor</th><th>Debit</th><th>Credit</th><th>Amount</th></tr></thead><tbody>${entries.map(entry=>`<tr><td>${escapeHtml(entry.type)}</td><td>${escapeHtml(entry.date)}</td><td class="qty">${escapeHtml(entry.reference)}</td><td>${escapeHtml(entry.vendor)}</td><td>${escapeHtml(entry.debit)}</td><td>${escapeHtml(entry.credit)}</td><td>${money(entry.amount)}</td></tr>`).join('')||'<tr><td colspan="7" class="empty-state">Vendor bill journal entries will appear here after stock is received.</td></tr>'}</tbody></table></div></section>`;
+  }
+  function renderUserSalesReport(){
+    const sales=transactions.filter(transaction=>transaction.type==='Sale');
+    const grouped=new Map();
+    sales.forEach(transaction=>{
+      const user=transaction.user||'Unknown';
+      const summary=grouped.get(user)||{count:0,units:0,total:0};
+      summary.count+=1;
+      summary.units+=transaction.quantity;
+      summary.total+=transaction.amount;
+      grouped.set(user,summary);
+    });
+    const summaries=[...grouped.entries()].sort((left,right)=>right[1].total-left[1].total);
+    return `<section class="panel table-panel" style="margin-top:14px"><div class="panel-head"><div><div class="panel-title">Sales by user</div><div class="panel-desc">Recorded sales grouped by team member</div></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>User</th><th>Sales</th><th>Units</th><th>Sales total</th></tr></thead><tbody>${summaries.map(([user,summary])=>`<tr><td class="product-name">${escapeHtml(user)}</td><td class="qty">${summary.count}</td><td class="qty">${summary.units}</td><td>${money(summary.total)}</td></tr>`).join('')||'<tr><td colspan="4" class="empty-state">No sales have been recorded.</td></tr>'}</tbody></table></div></section><section class="panel table-panel" style="margin-top:14px"><div class="panel-head"><div><div class="panel-title">User-wise sales records</div><div class="panel-desc">Individual sale transactions with the processing user</div></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Date</th><th>Sale ID</th><th>User</th><th>Product</th><th>SKU</th><th>Units</th><th>Amount</th><th>Reference</th></tr></thead><tbody>${sales.map(transaction=>`<tr><td>${escapeHtml(transaction.date)}</td><td class="qty">${escapeHtml(transaction.id)}</td><td>${escapeHtml(transaction.user||'Unknown')}</td><td>${escapeHtml(transaction.product)}</td><td class="qty">${escapeHtml(transaction.sku)}</td><td class="qty">${transaction.quantity}</td><td>${money(transaction.amount)}</td><td>${escapeHtml(transaction.reference)}</td></tr>`).join('')||'<tr><td colspan="8" class="empty-state">No sales have been recorded.</td></tr>'}</tbody></table></div></section>`;
+  }
+  function renderAuthenticationAudit(){
+    const rows=serverAuthEvents.map(event=>`<tr><td class="product-name">${escapeHtml(event.action)}</td><td>${escapeHtml(event.user)}</td><td>${escapeHtml(event.role)}</td><td>${escapeHtml(event.email)}</td><td class="qty">${escapeHtml(new Date(event.time).toLocaleString())}</td></tr>`).join('');
+    const empty=authAuditLoaded?'<tr><td colspan="5" class="empty-state">No sign-in or sign-out events recorded.</td></tr>':'<tr><td colspan="5" class="empty-state">Loading authentication activity…</td></tr>';
+    return `<section class="panel table-panel" style="margin-top:14px"><div class="panel-head"><div><div class="panel-title">Authentication activity</div><div class="panel-desc">Server-recorded successful sign-ins and sign-outs</div></div><span class="mini-metric">${serverAuthEvents.length} events</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Event</th><th>User</th><th>Role</th><th>Email</th><th>Time</th></tr></thead><tbody>${rows||empty}</tbody></table></div></section>`;
+  }
+  async function loadAuthenticationAudit(){
+    if(authAuditLoaded||authAuditLoading)return;
+    authAuditLoading=true;
+    try{
+      const response=await fetch('/api/audit/auth');
+      if(!response.ok)throw new Error('Could not load authentication activity.');
+      const result=await response.json();
+      serverAuthEvents=result.events||[];
+    }catch{serverAuthEvents=[];}
+    authAuditLoading=false;
+    authAuditLoaded=true;
+    if(active==='Audit Log')render();
+  }
+  function renderExpiryAlerts(){
+    const expiring=products.filter(isExpiryAlert).sort((left,right)=>left.expiryDate.localeCompare(right.expiryDate));
+    const rows=expiring.map(product=>{
+      const days=daysUntilExpiry(product.expiryDate),timing=days<0?`Expired ${Math.abs(days)} ${Math.abs(days)===1?'day':'days'} ago`:days===0?'Expires today':`Expires in ${days} days`;
+      const vendor=vendors.find(item=>item.name===product.vendor);
+      return `<tr><td><div class="product-name">${escapeHtml(product.name)}</div><div class="product-sku">${escapeHtml(product.id)}</div></td><td>${escapeHtml(product.expiryDate)}</td><td>${pill(expiryStatus(product))}<div class="product-sku">${escapeHtml(timing)}</div></td><td>${escapeHtml(product.vendor)}</td><td>${escapeHtml(vendor?.email||'No vendor email')}</td><td><button class="small-button" data-vendor="${escapeHtml(product.vendor)}" ${vendor?.email?'':'disabled'}>Email vendor</button></td></tr>`;
+    }).join('');
+    return `<section class="panel table-panel" style="margin-top:14px"><div class="panel-head"><div><div class="panel-title">Expiry alerts</div><div class="panel-desc">Automatically queued when stock expires within 15 days or is already expired. Review and email the respective vendor.</div></div><span class="mini-metric">${expiring.length} items</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Product</th><th>Expiry date</th><th>Status</th><th>Vendor</th><th>Email</th><th>Action</th></tr></thead><tbody>${rows||'<tr><td colspan="6" class="empty-state">No expired or soon-to-expire products.</td></tr>'}</tbody></table></div></section>`;
+  }
+  function openExpiryDateModal(productId){
+    const product=products.find(item=>item.id===productId);
+    if(!product)return;
+    $('overlay').innerHTML=`<div class="modal-backdrop" id="expiryBackdrop"><form class="modal" id="expiryForm" role="dialog" aria-modal="true"><div class="modal-head"><div><h2>Set product expiry</h2><div class="modal-subtitle">${escapeHtml(product.name)} · ${escapeHtml(product.id)}</div></div><button type="button" class="close-button" id="expiryClose" aria-label="Close">×</button></div><div class="field"><label for="expiryDateInput">Expiry date</label><input id="expiryDateInput" type="date" value="${escapeHtml(product.expiryDate||'')}"></div><div class="modal-actions"><button type="button" class="secondary-button" id="expiryCancel">Cancel</button><button type="submit" class="primary-button">Save expiry</button></div></form></div>`;
+    $('expiryClose').addEventListener('click',closeModal);
+    $('expiryCancel').addEventListener('click',closeModal);
+    $('expiryBackdrop').addEventListener('click',event=>{if(event.target.id==='expiryBackdrop')closeModal();});
+    $('expiryForm').addEventListener('submit',event=>{
+      event.preventDefault();
+      product.expiryDate=$('expiryDateInput').value;
+      product.expiryAlertKey='';
+      logAudit('Product expiry updated',`${product.name} · ${product.expiryDate||'cleared'}`);
+      refreshExpiryAlerts();
+      closeModal();
+      render();
+      showToast(product.expiryDate?'Expiry date saved.':'Expiry date cleared.');
+    });
+  }
+  function render(){
+    refreshExpiryAlerts();
+    $('page').innerHTML=active==='Overview'?renderDashboard():active==='Vendor Bills'?renderVendorBillsPage():modulePage();
+    if(active==='Day-End')$('page').insertAdjacentHTML('beforeend',renderBillLedger());
+    if(active==='Vendor Bills')$('page').insertAdjacentHTML('beforeend',renderOwnerSignaturePanel());
+    if(active==='Reports')$('page').insertAdjacentHTML('beforeend',renderUserSalesReport());
+    if(active==='Audit Log')$('page').insertAdjacentHTML('beforeend',renderAuthenticationAudit());
+    if(active==='Notifications')$('page').insertAdjacentHTML('beforeend',renderExpiryAlerts());
+    if(currentUser?.role==='Staff'&&active==='Products')$('page').querySelector('[data-action="product"]')?.remove();
+    if(active==='Notifications')updateEmailDeliveryStatus();
+    if(active==='Vendors'||active==='Notifications'){
+      const alertAction=$('page').querySelector('[data-action="notify"]');
+      if(alertAction)alertAction.textContent='Send vendor alerts';
+    }
+    $('quickActionLabel').textContent=active==='Overview'?'New transaction':(['Stock In','Stock Out','Sales','Refunds'].includes(active)?'New transaction':'Quick action');
+    bindPage();
+    if($('salesChart')){chart();$('chartPeriod').addEventListener('change',chart);}
+    if(active==='Audit Log')loadAuthenticationAudit();
+  }
+  function bindPage(){document.querySelectorAll('[data-nav]').forEach(button=>button.addEventListener('click',()=>navigate(button.dataset.nav)));document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>openModal(button.dataset.action)));document.querySelectorAll('[data-export]').forEach(button=>button.addEventListener('click',()=>exportData(button.dataset.export)));document.querySelectorAll('[data-vendor]').forEach(button=>button.addEventListener('click',()=>notifyVendor(button.dataset.vendor)));const searchInput=$('tableSearch');if(searchInput)searchInput.addEventListener('input',()=>{search=searchInput.value;filterTables();});const stockFilter=$('stockFilter'),categoryFilter=$('categoryFilter');[stockFilter,categoryFilter].filter(Boolean).forEach(el=>el.addEventListener('change',filterTables));}
+  function filterTables(){const query=(search||'').toLowerCase();if($('productTableBody')){const stockFilter=$('stockFilter')?.value||'All stock levels',category=$('categoryFilter')?.value||'All categories';const list=products.filter(p=>(p.name+' '+p.id+' '+p.vendor).toLowerCase().includes(query)&&(stockFilter==='All stock levels'||(stockFilter==='Low stock'?p.stock<=p.reorder:p.stock>p.reorder))&&(category==='All categories'||p.category===category));$('productTableBody').innerHTML=productRows(list)||'<tr><td colspan="7" class="empty-state">No matching products.</td></tr>';if($('rowCount'))$('rowCount').textContent=list.length+' products';}if($('vendorTableBody'))$('vendorTableBody').innerHTML=vendors.filter(v=>(v.name+' '+v.contact+' '+v.email).toLowerCase().includes(query)).map(v=>`<tr><td class="product-name">${escapeHtml(v.name)}</td><td>${escapeHtml(v.contact)}</td><td>${escapeHtml(v.email)}</td><td class="qty">${v.products}</td><td>${escapeHtml(v.lead)}</td><td>${pill(v.status)}</td><td><button class="small-button" data-vendor="${escapeHtml(v.name)}">Email vendor</button></td></tr>`).join('');if($('transactionTableBody'))$('transactionTableBody').innerHTML=transactionRows(transactions.filter(t=>t.type===(active==='Refunds'?'Refund':'Sale')).filter(t=>(t.product+' '+t.id+' '+t.reference).toLowerCase().includes(query)))||'<tr><td colspan="8" class="empty-state">No matching transactions.</td></tr>';if($('auditTableBody'))$('auditTableBody').innerHTML=audit.filter(a=>(a.action+' '+a.detail+' '+a.user).toLowerCase().includes(query)).map(a=>`<tr><td class="product-name">${escapeHtml(a.action)}</td><td>${escapeHtml(a.detail)}</td><td>${escapeHtml(a.user)}</td><td class="qty">${escapeHtml(a.time)}</td></tr>`).join('');document.querySelectorAll('[data-vendor]').forEach(button=>button.addEventListener('click',()=>notifyVendor(button.dataset.vendor)));}
+  function openModal(type){const config={product:['Add product','Create an inventory record.'],stockin:['Receive stock','Add delivered units to inventory.'],stockout:['Record stock adjustment','Remove damaged, lost, or transferred units.'],sale:['Record a sale','Record a completed customer sale.'],refund:['Process a refund','Return units to inventory and record the refund.'],vendor:['Add vendor','Add a supplier to your vendor directory.'],user:['Invite team member','Add a user and assign an access role.']};if(!config[type]){showToast('Quick action is available from the relevant module.');return;}const [title,subtitle]=config[type],productField=(type==='stockin'||type==='stockout'||type==='sale'||type==='refund')?`<div class="field full"><label for="txProduct">Product</label><select id="txProduct" required>${products.map(p=>`<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)} · ${escapeHtml(p.id)} · ${p.stock} on hand</option>`).join('')}</select></div><div class="field"><label for="txQty">Quantity</label><input id="txQty" type="number" min="1" step="1" value="1" required></div>${type==='stockin'?'<div class="field"><label for="txRef">Purchase order</label><input id="txRef" placeholder="PO-0000"></div>':type==='stockout'?'<div class="field"><label for="txRef">Reason</label><select id="txRef"><option>Adjustment</option><option>Damaged</option><option>Transfer</option><option>Loss</option></select></div>':type==='sale'?'<div class="field"><label for="txRef">Order reference</label><input id="txRef" placeholder="SO-0000"></div>':'<div class="field"><label for="txRef">Refund reference</label><input id="txRef" placeholder="RF-0000"></div>'}`:'';const fields=type==='product'?`<div class="field full"><label for="newName">Product name</label><input id="newName" required placeholder="Product name"></div><div class="field"><label for="newSku">SKU</label><input id="newSku" required placeholder="PR-0000"></div><div class="field"><label for="newCategory">Category</label><input id="newCategory" required placeholder="Home"></div><div class="field"><label for="newStock">Opening stock</label><input id="newStock" type="number" min="0" value="0"></div><div class="field"><label for="newReorder">Reorder point</label><input id="newReorder" type="number" min="0" value="10"></div><div class="field"><label for="newCost">Unit cost ($)</label><input id="newCost" type="number" min="0" step="0.01" required></div><div class="field"><label for="newPrice">Sale price ($)</label><input id="newPrice" type="number" min="0" step="0.01" required></div><div class="field full"><label for="newVendor">Vendor</label><select id="newVendor">${vendors.map(v=>`<option>${escapeHtml(v.name)}</option>`).join('')}</select></div>`:type==='vendor'?'<div class="field full"><label for="vendorName">Vendor name</label><input id="vendorName" required></div><div class="field"><label for="vendorContact">Contact name</label><input id="vendorContact" required></div><div class="field"><label for="vendorEmail">Email</label><input id="vendorEmail" type="email" required></div><div class="field"><label for="vendorLead">Lead time</label><input id="vendorLead" placeholder="5 days"></div>':type==='user'?'<div class="field full"><label for="userName">Full name</label><input id="userName" required></div><div class="field"><label for="userEmail">Email</label><input id="userEmail" type="email" required></div><div class="field"><label for="userRole">Role</label><select id="userRole"><option>Staff</option><option>Manager</option><option>Administrator</option></select></div>':productField; $('overlay').innerHTML=`<div class="modal-backdrop" id="modalBackdrop"><form class="modal" id="entryForm"><div class="modal-head"><div><h2>${title}</h2><div class="modal-subtitle">${subtitle}</div></div><button type="button" class="close-button" id="closeModal" aria-label="Close">×</button></div><div class="form-grid">${fields}</div><div class="modal-actions"><button type="button" class="secondary-button" id="cancelModal">Cancel</button><button type="submit" class="primary-button">${type==='product'?'Add product':type==='vendor'?'Add vendor':type==='user'?'Send invite':'Save transaction'}</button></div></form></div>`;$('closeModal').addEventListener('click',closeModal);$('cancelModal').addEventListener('click',closeModal);$('modalBackdrop').addEventListener('click',e=>{if(e.target.id==='modalBackdrop')closeModal();});$('entryForm').addEventListener('submit',e=>{e.preventDefault();submitModal(type);});}
+  function closeModal(){$('overlay').innerHTML='';}
+  function submitModal(type){if(type==='product'){const id=$('newSku').value.trim();if(products.some(p=>p.id.toLowerCase()===id.toLowerCase())){showToast('That SKU already exists.');return;}const name=$('newName').value.trim();products.unshift({id,name,category:$('newCategory').value.trim(),vendor:$('newVendor').value,stock:Number($('newStock').value),reorder:Number($('newReorder').value),cost:Number($('newCost').value),price:Number($('newPrice').value),updated:'Today'});logAudit('Product created',`${name} · ${id}`);save();closeModal();render();showToast('Product added to inventory.');return;}if(type==='vendor'){const name=$('vendorName').value.trim();vendors.push({name,contact:$('vendorContact').value.trim(),email:$('vendorEmail').value.trim(),products:0,lead:$('vendorLead').value.trim()||'Not set',status:'Active'});logAudit('Vendor added',name);save();closeModal();render();showToast('Vendor added.');return;}if(type==='user'){logAudit('User invited',`${$('userEmail').value} · ${$('userRole').value}`);closeModal();showToast('Invitation recorded.');return;}const product=products.find(p=>p.id===$('txProduct').value),quantity=Number($('txQty').value),kind={stockin:'Stock In',stockout:'Stock Out',sale:'Sale',refund:'Refund'}[type];if(!product||!quantity)return;if(['Stock Out','Sale'].includes(kind)&&quantity>product.stock){showToast('Quantity exceeds available stock.');return;}if(kind==='Stock In'||kind==='Refund')product.stock+=quantity;else product.stock-=quantity;product.updated='Today';const reference=$('txRef').value.trim()||({ 'Stock In':'PO-'+Math.floor(3100+Math.random()*899),'Stock Out':'ADJ-'+Math.floor(100+Math.random()*899),'Sale':'SO-'+Math.floor(8800+Math.random()*99),'Refund':'RF-'+Math.floor(200+Math.random()*99)}[kind]);const amount=quantity*product.price;transactions.unshift({id:'TX-'+(2088+transactions.length),type:kind,product:product.name,sku:product.id,quantity,amount,date:'Today, '+new Intl.DateTimeFormat('en-US',{hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date()),user:'Alex Morgan',reference});logAudit(kind==='Stock In'?'Stock received':kind==='Stock Out'?'Inventory adjusted':kind==='Sale'?'Sale recorded':'Refund approved',`${quantity} × ${product.name}${kind==='Stock Out'?' · '+reference:''}`);save();closeModal();render();showToast(`${kind} recorded. Stock is now ${product.stock}.`);}
+  function generateProductSku(){
+    const highest=products.reduce((current,product)=>{
+      const match=/^PR-(\d+)$/i.exec(product.id);
+      return match?Math.max(current,Number(match[1])):current;
+    },0);
+    let next=highest+1;
+    while(products.some(product=>product.id.toLowerCase()===`pr-${String(next).padStart(4,'0')}`.toLowerCase()))next++;
+    return `PR-${String(next).padStart(4,'0')}`;
+  }
+  const openModalBase=openModal;
+  openModal=type=>{
+    openModalBase(type);
+    if(type==='product'){
+      const skuInput=$('newSku');
+      skuInput.value=generateProductSku();
+      skuInput.readOnly=true;
+      skuInput.setAttribute('aria-readonly','true');
+      $('entryForm')?.querySelector('.form-grid')?.insertAdjacentHTML('beforeend','<div class="field"><label for="newExpiry">Expiry date</label><input id="newExpiry" type="date"></div>');
+      return;
+    }
+    if(type!=='stockin')return;
+    const form=$('entryForm');
+    const grid=form?.querySelector('.form-grid');
+    if(!grid)return;
+    grid.insertAdjacentHTML('beforeend',`<div class="field"><label for="billVendor">Bill vendor</label><select id="billVendor" required>${vendors.map(vendor=>`<option value="${escapeHtml(vendor.name)}">${escapeHtml(vendor.name)}</option>`).join('')}</select></div><div class="field"><label for="billInvoice">Vendor invoice #</label><input id="billInvoice" required placeholder="INV-0000"></div><div class="field"><label for="billAmount">Bill amount ($)</label><input id="billAmount" type="number" min="0.01" step="0.01" required></div><div class="field"><label for="billDate">Invoice date</label><input id="billDate" type="date" required></div><div class="field"><label for="billDueDate">Due date</label><input id="billDueDate" type="date" required></div><div class="field"><label for="billStatus">Payment status</label><select id="billStatus"><option>Unpaid</option><option>Paid</option></select></div>`);
+    grid.insertAdjacentHTML('beforeend','<div class="field"><label for="stockExpiry">Expiry date for received stock</label><input id="stockExpiry" type="date"></div>');
+    const dateInput=date=>new Date(date.getTime()-date.getTimezoneOffset()*60000).toISOString().slice(0,10);
+    const today=new Date();
+    const dueDate=new Date();
+    dueDate.setDate(dueDate.getDate()+30);
+    $('billDate').value=dateInput(today);
+    $('billDueDate').value=dateInput(dueDate);
+    const updateDefaults=()=>{
+      const product=products.find(item=>item.id===$('txProduct').value);
+      if(product){$('billVendor').value=product.vendor;if(!$('billAmount').dataset.edited)$('billAmount').value=(product.cost*Number($('txQty').value||0)).toFixed(2);if(!$('stockExpiry').dataset.edited)$('stockExpiry').value=product.expiryDate||'';}
+    };
+    $('billAmount').addEventListener('input',()=>$('billAmount').dataset.edited='true');
+    $('stockExpiry').addEventListener('input',()=>$('stockExpiry').dataset.edited='true');
+    $('txProduct').addEventListener('change',()=>{$('stockExpiry').dataset.edited='';updateDefaults();});
+    $('txQty').addEventListener('input',updateDefaults);
+    updateDefaults();
+  };
+  const submitModalBase=submitModal;
+  submitModal=type=>{
+    if(type==='product'){
+      const sku=$('newSku').value.trim(),expiryDate=$('newExpiry').value;
+      if(products.some(product=>product.id.toLowerCase()===sku.toLowerCase()))return submitModalBase(type);
+      submitModalBase(type);
+      const created=products.find(product=>product.id===sku);
+      if(created){created.expiryDate=expiryDate;created.expiryAlertKey='';save();refreshExpiryAlerts();render();}
+      return;
+    }
+    if(type!=='stockin')return submitModalBase(type);
+    const invoice=$('billInvoice').value.trim();
+    const vendor=$('billVendor').value;
+    if(bills.some(bill=>bill.vendor===vendor&&bill.invoice.toLowerCase()===invoice.toLowerCase())){showToast('That invoice number is already recorded for this vendor.');return;}
+    const amount=Number($('billAmount').value);
+    if(!amount||amount<=0){showToast('Enter a bill amount greater than zero.');return;}
+    const status=$('billStatus').value;
+    const product=products.find(item=>item.id===$('txProduct').value);
+    const quantity=Number($('txQty').value);
+    const stockExpiry=$('stockExpiry').value;
+    if(stockExpiry&&(!product.expiryDate||stockExpiry<product.expiryDate))product.expiryDate=stockExpiry;
+    bills.unshift({id:'BILL-'+Date.now(),invoice,vendor,amount,billDate:$('billDate').value,dueDate:$('billDueDate').value,status,paidDate:status==='Paid'?$('billDate').value:'',po:$('txRef').value.trim(),items:[{description:product?.name||'Stock receipt',sku:product?.id||'',quantity,unitCost:amount/quantity,lineTotal:amount}]});
+    logAudit('Vendor bill recorded',`${invoice} · ${vendor} · ${money(amount)}`);
+    refreshExpiryAlerts();
+    submitModalBase(type);
+  };
+  function openOwnerSignatureModal(){
+    $('overlay').innerHTML=`<div class="modal-backdrop" id="signatureBackdrop"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="signatureTitle"><div class="modal-head"><div><h2 id="signatureTitle">Owner digital signature</h2><div class="modal-subtitle">Draw the owner's signature. It will be saved on this device and used on bill copies.</div></div><button type="button" class="close-button" id="signatureClose" aria-label="Close">×</button></div><canvas class="signature-canvas" id="signatureCanvas" width="640" height="180" aria-label="Draw owner signature"></canvas><div class="modal-actions"><button type="button" class="secondary-button" id="signatureClear">Clear</button><button type="button" class="secondary-button" id="signatureCancel">Cancel</button><button type="button" class="primary-button" id="signatureSave" disabled>Save signature</button></div></section></div>`;
+    const canvas=$('signatureCanvas');
+    const context=canvas.getContext('2d');
+    let drawing=false,hasInk=false;
+    context.strokeStyle='#1e674d';
+    context.lineWidth=3;
+    context.lineCap='round';
+    context.lineJoin='round';
+    const point=event=>{const rect=canvas.getBoundingClientRect();return {x:(event.clientX-rect.left)*canvas.width/rect.width,y:(event.clientY-rect.top)*canvas.height/rect.height};};
+    canvas.addEventListener('pointerdown',event=>{drawing=true;canvas.setPointerCapture(event.pointerId);const position=point(event);context.beginPath();context.moveTo(position.x,position.y);});
+    canvas.addEventListener('pointermove',event=>{if(!drawing)return;const position=point(event);context.lineTo(position.x,position.y);context.stroke();hasInk=true;$('signatureSave').disabled=false;});
+    canvas.addEventListener('pointerup',()=>drawing=false);
+    canvas.addEventListener('pointercancel',()=>drawing=false);
+    $('signatureClear').addEventListener('click',()=>{context.clearRect(0,0,canvas.width,canvas.height);hasInk=false;$('signatureSave').disabled=true;});
+    $('signatureClose').addEventListener('click',closeModal);
+    $('signatureCancel').addEventListener('click',closeModal);
+    $('signatureBackdrop').addEventListener('click',event=>{if(event.target.id==='signatureBackdrop')closeModal();});
+    $('signatureSave').addEventListener('click',()=>{
+      if(!hasInk)return;
+      ownerSignature=canvas.toDataURL('image/png');
+      ownerSignatureDate=new Date().toISOString();
+      localStorage.setItem('ledgerlot-owner-signature',JSON.stringify(ownerSignature));
+      localStorage.setItem('ledgerlot-owner-signature-date',JSON.stringify(ownerSignatureDate));
+      logAudit('Owner digital signature saved','Used for vendor bill copies');
+      closeModal();
+      render();
+      showToast('Owner signature saved on this device.');
+    });
+  }
+  function printVendorBill(id){
+    const bill=bills.find(item=>item.id===id);
+    if(!bill)return;
+    if(!ownerSignature){showToast('Set the owner signature before generating a signed copy.');openOwnerSignatureModal();return;}
+    const vendor=vendors.find(item=>item.name===bill.vendor);
+    const rows=(bill.items||[]).map(item=>`<tr><td>${escapeHtml(item.description)}</td><td>${escapeHtml(item.sku)}</td><td>${item.quantity}</td><td>${money(item.unitCost)}</td><td>${money(item.lineTotal)}</td></tr>`).join('');
+    const signatureDate=ownerSignatureDate?new Date(ownerSignatureDate).toLocaleString():'Not recorded';
+    const printWindow=window.open('','_blank');
+    if(!printWindow){showToast('Allow pop-ups to generate the bill copy.');return;}
+    const documentHtml=`<!doctype html><html><head><meta charset="utf-8"><title>Vendor Bill ${escapeHtml(bill.invoice)}</title><style>body{font:14px Arial,sans-serif;color:#19251f;margin:42px}header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #1e674d;padding-bottom:18px}h1{font-size:25px;margin:0}h2{font-size:18px;margin:28px 0 8px}.muted{color:#66716a;font-size:12px}.meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:22px 0}table{width:100%;border-collapse:collapse;margin-top:18px}th,td{text-align:left;padding:10px;border-bottom:1px solid #dfe4dd;font-size:12px}th{background:#f2f4ef}.total{text-align:right;font-size:18px;font-weight:bold;margin:20px 0}.signature{margin-top:42px;width:220px;height:85px;object-fit:contain;object-position:left bottom;border-bottom:1px solid #59645c}.sign-name{font-weight:bold;margin-top:8px}.sign-date{font-size:11px;color:#66716a;margin-top:3px}@media print{body{margin:15mm}button{display:none}}</style></head><body><header><div><h1>TZ Solutions</h1><div class="muted">Vendor bill copy</div></div><div class="muted">Bill ID: ${escapeHtml(bill.id)}</div></header><h2>${escapeHtml(bill.vendor)}</h2><div class="muted">${escapeHtml(vendor?.email||'')}</div><div class="meta"><div><b>Invoice:</b> ${escapeHtml(bill.invoice)}</div><div><b>PO reference:</b> ${escapeHtml(bill.po||'—')}</div><div><b>Invoice date:</b> ${escapeHtml(bill.billDate)}</div><div><b>Due date:</b> ${escapeHtml(bill.dueDate)}</div><div><b>Payment status:</b> ${escapeHtml(bill.status)}</div></div><table><thead><tr><th>Description</th><th>SKU</th><th>Qty</th><th>Unit cost</th><th>Line total</th></tr></thead><tbody>${rows||`<tr><td colspan="5">Stock receipt</td></tr>`}</tbody></table><div class="total">Bill total: ${money(bill.amount)}</div><div><img class="signature" src="${escapeHtml(ownerSignature)}" alt="Owner signature"><div class="sign-name">Alex Morgan · Owner, TZ Solutions</div><div class="sign-date">Digitally signed on ${escapeHtml(signatureDate)}</div></div></body></html>`;
+    printWindow.document.open();
+    printWindow.document.write(documentHtml);
+    printWindow.document.close();
+    logAudit('Signed vendor bill copy generated',`${bill.invoice} · ${bill.vendor}`);
+    setTimeout(()=>{printWindow.focus();printWindow.print();},250);
+  }
+  function showEmailChoices(){
+    const choices=vendors.map(vendor=>({vendor,items:products.filter(product=>product.vendor===vendor.name&&(product.stock<=product.reorder||isExpiryAlert(product)))})).filter(choice=>choice.items.length);
+    if(!choices.length){showToast('No stock or expiry alerts need a vendor notice.');return;}
+    $('overlay').innerHTML=`<div class="modal-backdrop" id="modalBackdrop"><section class="modal" role="dialog" aria-modal="true" aria-labelledby="emailModalTitle"><div class="modal-head"><div><h2 id="emailModalTitle">Email low-stock vendors</h2><div class="modal-subtitle">Choose a supplier to open a prefilled draft in your mail app.</div></div><button type="button" class="close-button" id="closeModal" aria-label="Close">×</button></div><div class="settings-panel">${choices.map(({vendor,items})=>`<div class="setting-row"><span><b>${escapeHtml(vendor.name)}</b><br><small style="color:var(--muted)">${items.length} low-stock ${items.length===1?'item':'items'} · ${escapeHtml(vendor.email)}</small></span><button class="small-button" data-compose-vendor="${escapeHtml(vendor.name)}">Compose email ↗</button></div>`).join('')}</div><div class="modal-actions"><button type="button" class="secondary-button" id="cancelModal">Cancel</button></div></section></div>`;
+    $('emailModalTitle').textContent='Email vendors with inventory alerts';
+    $('emailModalTitle').nextElementSibling.textContent='Choose a supplier to draft low-stock and expiry alerts in your mail app.';
+    document.querySelectorAll('#overlay .setting-row small').forEach((label,index)=>label.textContent=`${choices[index].items.length} inventory alerts · ${choices[index].vendor.email}`);
+    $('closeModal').addEventListener('click',closeModal);
+    $('cancelModal').addEventListener('click',closeModal);
+    $('modalBackdrop').addEventListener('click',event=>{if(event.target.id==='modalBackdrop')closeModal();});
+    document.querySelectorAll('[data-compose-vendor]').forEach(button=>button.addEventListener('click',()=>notifyVendor(button.dataset.composeVendor)));
+  }
+  function notifyVendor(name){
+    const vendor=vendors.find(item=>item.name===name);
+    if(!vendor||!vendor.email){showToast('Add an email address for this vendor first.');return;}
+    const affected=products.filter(product=>product.vendor===name&&(product.stock<=product.reorder||isExpiryAlert(product)));
+    if(!affected.length){showToast('No stock or expiry alerts need a vendor notice.');return;}
+    const subject=`Inventory alert: ${affected.length} ${affected.length===1?'item':'items'} need attention`;
+    const itemLines=affected.map(product=>{
+      const details=[];
+      if(product.stock<=product.reorder)details.push(`${product.stock} on hand; reorder point ${product.reorder}; suggested order ${Math.max(product.reorder*2-product.stock,product.reorder)} units`);
+      if(isExpiryAlert(product)){const days=daysUntilExpiry(product.expiryDate);details.push(days<0?`expired on ${product.expiryDate}`:`expires on ${product.expiryDate} in ${days} days`);}
+      return `- ${product.name} (${product.id}): ${details.join('; ')}`;
+    });
+    const body=`Hello ${vendor.contact},\n\nPlease review these inventory alerts:\n\n${itemLines.join('\n')}\n\nPlease confirm the appropriate action and expected delivery.\n\nRegards,\nTZ Solutions`;
+    const address=encodeURIComponent(vendor.email).replace(/%40/gi,'@');
+    const mailto=`mailto:${address}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    logAudit('Vendor inventory alert email drafted',`${name} · ${affected.length} ${affected.length===1?'item':'items'}`);
+    const link=document.createElement('a');
+    link.href=mailto;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    closeModal();
+    showToast(`Email draft opened for ${name}. Review and send it from your mail app.`);
+  }
+  function exportData(kind){let rows=[],filename='';if(kind==='0'){rows=[['SKU','Product','Category','Vendor','On hand','Reorder point','Unit cost','Sale price'],...products.map(p=>[p.id,p.name,p.category,p.vendor,p.stock,p.reorder,p.cost,p.price])];filename='inventory.csv';}else if(kind==='1'){rows=[['ID','Type','Product','SKU','Quantity','Amount','Date','User','Reference'],...transactions.map(t=>[t.id,t.type,t.product,t.sku,t.quantity,t.amount,t.date,t.user,t.reference])];filename='transactions.csv';}else if(kind==='2'){rows=[['ID','Type','Product','SKU','Quantity','Date','Reference'],...transactions.map(t=>[t.id,t.type,t.product,t.sku,t.quantity,t.date,t.reference])];filename='stock-movement.csv';}else{rows=[['Activity','Details','User','Timestamp'],...audit.map(a=>[a.action,a.detail,a.user,a.time])];filename='audit-log.csv';}const csv=rows.map(row=>row.map(value=>'"'+String(value??'').replaceAll('"','""')+'"').join(',')).join('\r\n');const link=document.createElement('a');link.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));link.download=filename;link.click();URL.revokeObjectURL(link.href);showToast(`${filename} exported.`);logAudit('Report exported',filename);}
+  function showToast(message){clearTimeout(toastTimer);$('toastRoot').innerHTML=`<div class="toast">${escapeHtml(message)}</div>`;toastTimer=setTimeout(()=>$('toastRoot').innerHTML='',3200);}
+  function renderLogin(message=''){
+    currentUser=null;
+    document.body.classList.add('signed-out');
+    setNav();
+    const roleOptions=availableRoles.map(role=>`<option value="${escapeHtml(role)}">${escapeHtml(role)}</option>`).join('')||'<option value="" selected>No roles configured</option>';
+    const help=location.protocol==='file:'?'Open the application at http://127.0.0.1:3000 to sign in.':availableRoles.length?'Use the email and password configured for the selected role.':'Configure at least ADMIN_EMAIL and ADMIN_PASSWORD in .env, then restart the server.';
+    $('authScreen').innerHTML=`<div class="auth-screen"><section class="auth-panel"><div class="brand"><div class="brand-mark" style="font-size:12px">TZ</div><div><div class="brand-name">TZ Solutions</div><div class="brand-sub">INVENTORY CONTROL</div></div></div><h1 class="auth-title">Sign in</h1><p class="auth-copy">Use your assigned role account to access inventory.</p><form class="auth-form" id="loginForm"><div class="field"><label for="loginRole">Role</label><select id="loginRole" required>${roleOptions}</select></div><div class="field"><label for="loginEmail">Email</label><input id="loginEmail" type="email" autocomplete="username" required></div><div class="field"><label for="loginPassword">Password</label><input id="loginPassword" type="password" autocomplete="current-password" required></div><div class="auth-error" id="authError" role="alert">${escapeHtml(message)}</div><button class="primary-button" type="submit" ${availableRoles.length?'':'disabled'}>Sign in</button></form><p class="auth-help">${escapeHtml(help)}</p></section></div>`;
+    const loginPanel=$('authScreen').querySelector('.auth-panel');
+    loginPanel.setAttribute('role','dialog');
+    loginPanel.setAttribute('aria-modal','true');
+    loginPanel.setAttribute('aria-labelledby','authTitle');
+    $('authScreen').querySelector('.auth-title').id='authTitle';
+    const form=$('loginForm');
+    form.addEventListener('submit',async event=>{
+      event.preventDefault();
+      const submit=form.querySelector('[type="submit"]');
+      submit.disabled=true;
+      $('authError').textContent='';
+      try{
+        const response=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({role:$('loginRole').value,email:$('loginEmail').value,password:$('loginPassword').value})});
+        const result=await response.json();
+        if(!response.ok){$('authError').textContent=result.error||'Sign-in failed.';submit.disabled=false;return;}
+        enterApplication(result.user);
+      }catch{$('authError').textContent='Could not reach the sign-in service.';submit.disabled=false;}
+    });
+  }
+  function enterApplication(user){
+    applyLoggedUser(user);
+    serverAuthEvents=[];
+    authAuditLoaded=false;
+    document.body.classList.remove('signed-out');
+    active='Overview';
+    $('crumbName').textContent=active;
+    $('authScreen').innerHTML='';
+    setNav();
+    render();
+    refreshGmailStatus();
+    syncInventory();
+  }
+  async function initializeApp(){
+    $('todayDate').textContent=shortDate();
+    if(location.protocol==='file:'){renderLogin();return;}
+    try{
+      const statusResponse=await fetch('/api/status');
+      const status=await statusResponse.json();
+      availableRoles=status.availableRoles||[];
+      const sessionResponse=await fetch('/api/session');
+      const session=await sessionResponse.json();
+      if(session.authenticated&&session.user)enterApplication(session.user);
+      else renderLogin(status.loginConfigured?'':'No login roles are configured on this server.');
+    }catch{renderLogin('Could not reach the sign-in service.');}
+  }
+  async function logoutUser(){
+    try{await fetch('/api/logout',{method:'POST'});}catch{}
+    renderLogin('You have signed out.');
+  }
+  $('mobileMenu').addEventListener('click',()=>$('sidebar').classList.toggle('open'));
+  $('alertsButton').addEventListener('click',()=>navigate('Notifications'));
+  $('quickAction').addEventListener('click',()=>openModal(({ 'Overview':'sale','Products':'product','Stock In':'stockin','Stock Out':'stockout','Sales':'sale','Refunds':'refund'}[active])||'sale'));
+  $('logoutButton').addEventListener('click',logoutUser);
+  $('headerSignOut').addEventListener('click',logoutUser);
+  window.addEventListener('resize',()=>{if($('salesChart'))chart();});
+  initializeApp();
+  setInterval(()=>{if(!currentUser)return;const changed=refreshExpiryAlerts();if(changed&&active==='Notifications')render();},60*60*1000);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+  document.addEventListener('click',event=>{
+    const expiryButton=event.target.closest('[data-set-expiry]');
+    if(expiryButton)openExpiryDateModal(expiryButton.dataset.setExpiry);
+  });
+  document.addEventListener('click',event=>{
+    const signatureButton=event.target.closest('[data-owner-signature]');
+    if(signatureButton){openOwnerSignatureModal();return;}
+    const copyButton=event.target.closest('[data-bill-copy]');
+    if(copyButton)printVendorBill(copyButton.dataset.billCopy);
+  });
+  document.addEventListener('click',event=>{
+    const button=event.target.closest('[data-mark-bill-paid]');
+    if(!button)return;
+    const bill=bills.find(item=>item.id===button.dataset.markBillPaid);
+    if(!bill||bill.status==='Paid')return;
+    bill.status='Paid';
+    bill.paidDate=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+    logAudit('Vendor bill paid',`${bill.invoice} · ${bill.vendor} · ${money(bill.amount)}`);
+    save();
+    render();
+    showToast(`Bill ${bill.invoice} marked paid.`);
+  });
+  document.addEventListener('click',event=>{
+    const button=event.target.closest('[data-action="notify"]');
+    if(button){event.preventDefault();event.stopImmediatePropagation();showEmailChoices();}
+  },true);
+  document.addEventListener('click',e=>{if(e.target.matches('[data-nav]')&&!e.target.closest('#navList,#adminNav'))navigate(e.target.dataset.nav);if(e.target.id==='closeDay')showToast('Day-end close recorded.');});
+  document.addEventListener('click',e=>{const close=e.target.closest('[data-action="close-day"]');if(close){logAudit('Day-end closed','Daily reconciliation finalized');showToast('Day-end close recorded.');render();}});
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "tz-solutions-inventory",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Inventory dashboard with Gmail expiry alerts",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^11.1.3",
+    "dotenv": "^16.4.7",
+    "nodemailer": "^10.0.13"
+  },
+  "devDependencies": {
+    "netlify-cli": "^27.10.2"
+  }
+}
