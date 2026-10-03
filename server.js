@@ -14,7 +14,7 @@ const PORT = Number(process.env.PORT || 3000);
 const intervalMinutes = Math.max(5, Number(process.env.EXPIRY_CHECK_INTERVAL_MINUTES || 60));
 const dataDirectory = path.join(__dirname, 'data');
 const inventoryFile = path.join(dataDirectory, 'inventory.json');
-const sampleStore = { products: [], vendors: [], sentAlerts: {}, authAudit: [] };
+const sampleStore = { products: [], vendors: [], sentAlerts: {}, authAudit: [], dayEndReports: [] };
 const sessionCookie = 'tz_inventory_session';
 const sessionLifetimeMs = 8 * 60 * 60 * 1000;
 const sessions = new Map();
@@ -171,6 +171,30 @@ function readJson(request) {
   });
 }
 
+function validDayEndDate(value) {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+}
+
+function normalizeDayEndReports(payload, date) {
+  const definitions = {
+    stock: { title: 'Day-wise Stock Report', filename: `${date}-day-wise-stock-report.pdf` },
+    sales: { title: 'Day-wise Sells Report', filename: `${date}-day-wise-sells-report.pdf` },
+    transactions: { title: 'Day-wise Transaction Report', filename: `${date}-day-wise-transaction-report.pdf` },
+    accounting: { title: "Day's Basic Accounting Report", filename: `${date}-days-basic-accounting-report.pdf` }
+  };
+  if (!Array.isArray(payload) || payload.length !== Object.keys(definitions).length) return null;
+  const reports = [];
+  for (const item of payload) {
+    const definition = definitions[item?.type];
+    if (!definition || reports.some(report => report.type === item.type) || !Array.isArray(item.rows)) return null;
+    if (!item.rows.every(row => Array.isArray(row) && row.every(value => ['string', 'number'].includes(typeof value) || value === null))) return null;
+    reports.push({ type: item.type, ...definition, rows: item.rows });
+  }
+  return reports.length === Object.keys(definitions).length ? reports : null;
+}
+
 const server = http.createServer(async (request, response) => {
   const requestUrl = new URL(request.url, `http://${HOST}:${PORT}`);
   if (request.method === 'GET' && requestUrl.pathname === '/api/session') {
@@ -222,6 +246,31 @@ const server = http.createServer(async (request, response) => {
   }
   if (request.method === 'GET' && requestUrl.pathname === '/api/status') {
     return sendJson(response, 200, { gmailConfigured, intervalMinutes, loginConfigured: roleAccounts.length > 0, availableRoles: roleAccounts.map(account => account.role) });
+  }
+  if (requestUrl.pathname === '/api/day-end') {
+    const session = getSession(request);
+    if (!session) return sendJson(response, 401, { error: 'Sign in to access day-end accounting.' });
+    if (!['Administrator', 'Manager'].includes(session.user.role)) return sendJson(response, 403, { error: 'You do not have access to day-end accounting.' });
+    store.dayEndReports ||= [];
+    if (request.method === 'GET') return sendJson(response, 200, { reports: store.dayEndReports });
+    if (request.method === 'POST') {
+      try {
+        const payload = await readJson(request);
+        if (!validDayEndDate(payload.date)) return sendJson(response, 400, { error: 'A valid business date is required.' });
+        const existing = store.dayEndReports.find(report => report.date === payload.date);
+        if (existing) return sendJson(response, 409, { error: 'Day-end accounting has already been completed for this date.', report: existing });
+        const reports = normalizeDayEndReports(payload.reports, payload.date);
+        if (!reports) return sendJson(response, 400, { error: 'Exactly four valid daily reports are required.' });
+        const report = { date: payload.date, reports, generatedAt: new Date().toISOString(), generatedBy: session.user.name };
+        store.dayEndReports.push(report);
+        store.dayEndReports.sort((left, right) => right.date.localeCompare(left.date));
+        persistStore();
+        return sendJson(response, 201, { report });
+      } catch (error) {
+        return sendJson(response, 400, { error: error.message });
+      }
+    }
+    return sendJson(response, 405, { error: 'Method not allowed.' });
   }
   if (request.method === 'PUT' && requestUrl.pathname === '/api/inventory') {
     if (!getSession(request)) return sendJson(response, 401, { error: 'Sign in to synchronize inventory.' });

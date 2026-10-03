@@ -4,7 +4,7 @@
 
 1. Install Node.js 20 or newer.
 2. Run `npm.cmd install` in this folder.
-3. Copy `.env.example` to `.env` and fill in Gmail settings and the role accounts you need.
+3. Create a local `.env` file and add the Gmail settings and role account variables you need. Keep `.env` local; it is ignored by Git and must not be published.
 4. Run `npm.cmd start`.
 5. Open `http://127.0.0.1:3000`.
 
@@ -21,6 +21,12 @@ This is a local role-authenticated app. The server binds only to `127.0.0.1`; do
 Configure `ADMIN_EMAIL` and `ADMIN_PASSWORD` to enable the Administrator account. Configure `MANAGER_EMAIL`/`MANAGER_PASSWORD` and `STAFF_EMAIL`/`STAFF_PASSWORD` to enable those roles. Each role signs in with its matching email, password, and role selection. Use unique, strong passwords; credentials stay in `.env` and are checked by the local server.
 
 The Administrator can open every module. Managers can access workspace modules except Users & Roles. Staff can access Overview, Products, Stock In, Stock Out, and Sales. Sessions expire after eight hours or when the server restarts. The app requires the localhost URL; the `file://` page does not authenticate or synchronize data.
+
+## Day-end accounting
+
+Administrators and Managers can close the day once per business date from Day-End. Closing creates a saved snapshot of the Day-wise Stock Report, Day-wise Sells Report, Day-wise Transaction Report, and Day's Basic Accounting Report. Each report is available as a formatted PDF download in the generated daily reports list. Local runs store report snapshots in `data/inventory.json`; Netlify deployments store them with the inventory database.
+
+Fresh browser storage starts with no sample products, sales, vendors, or activity. Existing browser data and the ignored local `data/inventory.json` are not cleared automatically.
 
 ## Deploy to Netlify
 

@@ -5,7 +5,7 @@ import { getStore as openStore } from '@netlify/blobs';
 const inventoryStoreName = 'tz-solutions-inventory';
 const sessionStoreName = 'tz-solutions-sessions';
 const sessionLifetimeMs = 8 * 60 * 60 * 1000;
-const defaultDatabase = { products: [], vendors: [], sentAlerts: {}, authAudit: [] };
+const defaultDatabase = { products: [], vendors: [], sentAlerts: {}, authAudit: [], dayEndReports: [] };
 const gmailConfigured = Boolean(process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD);
 const mailTransporter = gmailConfigured ? nodemailer.createTransport({
   service: 'gmail',

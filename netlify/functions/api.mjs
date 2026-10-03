@@ -26,6 +26,30 @@ function secureCompare(left, right) {
   return crypto.timingSafeEqual(leftHash, rightHash);
 }
 
+function validDayEndDate(value) {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
+}
+
+function normalizeDayEndReports(payload, date) {
+  const definitions = {
+    stock: { title: 'Day-wise Stock Report', filename: `${date}-day-wise-stock-report.pdf` },
+    sales: { title: 'Day-wise Sells Report', filename: `${date}-day-wise-sells-report.pdf` },
+    transactions: { title: 'Day-wise Transaction Report', filename: `${date}-day-wise-transaction-report.pdf` },
+    accounting: { title: "Day's Basic Accounting Report", filename: `${date}-days-basic-accounting-report.pdf` }
+  };
+  if (!Array.isArray(payload) || payload.length !== Object.keys(definitions).length) return null;
+  const reports = [];
+  for (const item of payload) {
+    const definition = definitions[item?.type];
+    if (!definition || reports.some(report => report.type === item.type) || !Array.isArray(item.rows)) return null;
+    if (!item.rows.every(row => Array.isArray(row) && row.every(value => ['string', 'number'].includes(typeof value) || value === null))) return null;
+    reports.push({ type: item.type, ...definition, rows: item.rows });
+  }
+  return reports.length === Object.keys(definitions).length ? reports : null;
+}
+
 async function checkLoginLimit(request) {
   const address = request.headers.get('x-nf-client-connection-ip') || request.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown';
   const key = crypto.createHash('sha256').update(address).digest('hex');
@@ -94,6 +118,34 @@ export default async request => {
     if (!['Administrator', 'Manager'].includes(session.user.role)) return response(403, { error: 'You do not have access to authentication activity.' });
     const database = await readDatabase();
     return response(200, { events: database.authAudit || [] });
+  }
+
+  if (route === '/day-end') {
+    const session = await getSession(request);
+    if (!session) return response(401, { error: 'Sign in to access day-end accounting.' });
+    if (!['Administrator', 'Manager'].includes(session.user.role)) return response(403, { error: 'You do not have access to day-end accounting.' });
+    const database = await readDatabase();
+    database.dayEndReports ||= [];
+    if (method === 'GET') return response(200, { reports: database.dayEndReports });
+    if (method === 'POST') {
+      try {
+        const payload = await request.json();
+        if (!validDayEndDate(payload.date)) return response(400, { error: 'A valid business date is required.' });
+        const existing = database.dayEndReports.find(report => report.date === payload.date);
+        if (existing) return response(409, { error: 'Day-end accounting has already been completed for this date.', report: existing });
+        const reports = normalizeDayEndReports(payload.reports, payload.date);
+        if (!reports) return response(400, { error: 'Exactly four valid daily reports are required.' });
+        const report = { date: payload.date, reports, generatedAt: new Date().toISOString(), generatedBy: session.user.name };
+        database.dayEndReports.push(report);
+        database.dayEndReports.sort((left, right) => right.date.localeCompare(left.date));
+        await writeDatabase(database);
+        return response(201, { report });
+      } catch (error) {
+        console.error(`Day-end report generation failed: ${error.message}`);
+        return response(400, { error: 'Could not generate day-end reports.' });
+      }
+    }
+    return response(405, { error: 'Method not allowed.' });
   }
 
   if (method === 'PUT' && route === '/inventory') {

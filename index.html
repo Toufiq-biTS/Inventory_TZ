@@ -42,38 +42,12 @@
 <div id="overlay"></div><div id="authScreen"></div><div id="toastRoot" aria-live="polite"></div>
 <script>
 (() => {
-  const seedProducts = [
-    {id:'PR-1042',name:'Ceramic pour-over set',category:'Kitchen',vendor:'Northline Supply',stock:42,reorder:18,cost:24.5,price:48,updated:'Today, 09:42'},
-    {id:'PR-1038',name:'Linen market tote',category:'Accessories',vendor:'Fieldwork Goods',stock:9,reorder:12,cost:11,price:28,updated:'Today, 09:18'},
-    {id:'PR-1031',name:'Amber glass bottle',category:'Home',vendor:'Northline Supply',stock:27,reorder:10,cost:8.25,price:22,updated:'Today, 08:56'},
-    {id:'PR-1027',name:'Oak desk organizer',category:'Office',vendor:'Juniper & Co.',stock:6,reorder:10,cost:19,price:42,updated:'Yesterday'},
-    {id:'PR-1020',name:'Woven cotton throw',category:'Home',vendor:'Fieldwork Goods',stock:31,reorder:12,cost:32,price:72,updated:'Yesterday'},
-    {id:'PR-1014',name:'Speckled stoneware mug',category:'Kitchen',vendor:'Juniper & Co.',stock:54,reorder:20,cost:9,price:24,updated:'Yesterday'},
-    {id:'PR-1009',name:'Brass reading lamp',category:'Lighting',vendor:'Northline Supply',stock:14,reorder:8,cost:38,price:89,updated:'Oct 01'},
-    {id:'PR-1002',name:'Recycled paper journal',category:'Office',vendor:'Fieldwork Goods',stock:3,reorder:15,cost:4.5,price:14,updated:'Oct 01'}
-  ];
-  const seedTransactions = [
-    {id:'TX-2087',type:'Sale',product:'Ceramic pour-over set',sku:'PR-1042',quantity:2,amount:96,date:'Today, 10:24',user:'Alex Morgan',reference:'SO-8841'},
-    {id:'TX-2086',type:'Stock In',product:'Amber glass bottle',sku:'PR-1031',quantity:24,amount:198,date:'Today, 09:51',user:'Jamie Lee',reference:'PO-3108'},
-    {id:'TX-2085',type:'Stock Out',product:'Linen market tote',sku:'PR-1038',quantity:1,amount:28,date:'Today, 09:32',user:'Alex Morgan',reference:'ADJ-142'},
-    {id:'TX-2084',type:'Refund',product:'Speckled stoneware mug',sku:'PR-1014',quantity:1,amount:24,date:'Today, 09:08',user:'Jamie Lee',reference:'RF-229'},
-    {id:'TX-2083',type:'Sale',product:'Woven cotton throw',sku:'PR-1020',quantity:1,amount:72,date:'Today, 08:47',user:'Alex Morgan',reference:'SO-8839'},
-    {id:'TX-2082',type:'Sale',product:'Amber glass bottle',sku:'PR-1031',quantity:3,amount:66,date:'Yesterday',user:'Jamie Lee',reference:'SO-8832'}
-  ];
-  const seedVendors = [
-    {name:'Northline Supply',contact:'Mira Patel',email:'orders@northline.example',products:3,lead:'4 days',status:'Active'},
-    {name:'Fieldwork Goods',contact:'Sam Rivera',email:'hello@fieldwork.example',products:3,lead:'7 days',status:'Active'},
-    {name:'Juniper & Co.',contact:'Nora Ellis',email:'trade@juniper.example',products:2,lead:'5 days',status:'Active'}
-  ];
+  const seedProducts = [];
+  const seedTransactions = [];
+  const seedVendors = [];
   const load = (key, fallback) => { try { const value=localStorage.getItem('ledgerlot-'+key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } };
-  let products=load('products',seedProducts), transactions=load('transactions',seedTransactions), audit=load('audit',[
-    {action:'Sale recorded',detail:'2 × Ceramic pour-over set',user:'Alex Morgan',time:'Today, 10:24'},
-    {action:'Stock received',detail:'24 × Amber glass bottle',user:'Jamie Lee',time:'Today, 09:51'},
-    {action:'Low-stock alert sent',detail:'Recycled paper journal → Fieldwork Goods',user:'System',time:'Today, 09:15'},
-    {action:'Inventory adjusted',detail:'Linen market tote · −1 unit',user:'Alex Morgan',time:'Today, 09:32'},
-    {action:'Refund approved',detail:'Speckled stoneware mug · RF-229',user:'Jamie Lee',time:'Today, 09:08'}
-  ]), vendors=load('vendors',seedVendors), bills=load('bills',[]);
-  let active='Overview', filter='All', search='', toastTimer, inventorySyncTimer, gmailConfigured=false, currentUser=null, availableRoles=[], serverAuthEvents=[], authAuditLoaded=false, authAuditLoading=false, ownerSignature=load('owner-signature',''), ownerSignatureDate=load('owner-signature-date','');
+  let products=load('products',seedProducts), transactions=load('transactions',seedTransactions), audit=load('audit',[]), vendors=load('vendors',seedVendors), bills=load('bills',[]);
+  let active='Overview', filter='All', search='', toastTimer, inventorySyncTimer, gmailConfigured=false, currentUser=null, availableRoles=[], serverAuthEvents=[], authAuditLoaded=false, authAuditLoading=false, ownerSignature=load('owner-signature',''), ownerSignatureDate=load('owner-signature-date',''), dayEndReports=load('day-end-reports',[]), dayEndRunning=false;
   const navItems=[['Overview','⌂'],['Products','▦'],['Stock In','↓'],['Stock Out','↑'],['Sales','↗'],['Refunds','↩'],['Vendors','◇'],['Vendor Bills','▧'],['Day-End','≡'],['Reports','▤']];
   const adminItems=[['Users & Roles','♙'],['Notifications','◎'],['Audit Log','◷']];
   const roleAccess={
@@ -83,6 +57,162 @@
   };
   const $=id=>document.getElementById(id), money=value=>'$'+Number(value||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}), escapeHtml=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const save=()=>{localStorage.setItem('ledgerlot-products',JSON.stringify(products));localStorage.setItem('ledgerlot-transactions',JSON.stringify(transactions));localStorage.setItem('ledgerlot-audit',JSON.stringify(audit));localStorage.setItem('ledgerlot-vendors',JSON.stringify(vendors));localStorage.setItem('ledgerlot-bills',JSON.stringify(bills));queueInventorySync();};
+  const localDayKey=(date=new Date())=>`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+  function transactionsForDay(day){
+    const target=new Date(`${day}T00:00:00`);
+    return transactions.filter(transaction=>{
+      if(transaction.day)return transaction.day===day;
+      const value=String(transaction.date||'').trim();
+      if(value.startsWith('Today'))return day===localDayKey();
+      if(/^\d{4}-\d{2}-\d{2}/.test(value))return value.slice(0,10)===day;
+      return false;
+    });
+  }
+  function createDayEndReports(day){
+    const dailyTransactions=transactionsForDay(day);
+    const sales=dailyTransactions.filter(transaction=>transaction.type==='Sale');
+    const refunds=dailyTransactions.filter(transaction=>transaction.type==='Refund');
+    const dailyBills=bills.filter(bill=>bill.billDate===day||bill.paidDate===day);
+    const rowsForTransactions=list=>[['ID','Type','Product','SKU','Quantity','Amount','Date','User','Reference'],...list.map(transaction=>[transaction.id,transaction.type,transaction.product,transaction.sku,transaction.quantity,transaction.amount,transaction.date,transaction.user,transaction.reference])];
+    return {date:day,reports:[
+      {type:'stock',title:'Day-wise Stock Report',filename:`${day}-day-wise-stock-report.pdf`,rows:[['SKU','Product','Category','Vendor','On hand','Reorder point','Unit cost','Stock value'],...products.map(product=>[product.id,product.name,product.category,product.vendor,product.stock,product.reorder,product.cost,product.stock*product.cost])]},
+      {type:'sales',title:'Day-wise Sells Report',filename:`${day}-day-wise-sells-report.pdf`,rows:rowsForTransactions(sales)},
+      {type:'transactions',title:'Day-wise Transaction Report',filename:`${day}-day-wise-transaction-report.pdf`,rows:rowsForTransactions(dailyTransactions)},
+      {type:'accounting',title:"Day's Basic Accounting Report",filename:`${day}-days-basic-accounting-report.pdf`,rows:[['Account','Amount'],['Gross sales',sales.reduce((sum,transaction)=>sum+Number(transaction.amount||0),0)],['Refunds',refunds.reduce((sum,transaction)=>sum+Number(transaction.amount||0),0)],['Net sales',sales.reduce((sum,transaction)=>sum+Number(transaction.amount||0),0)-refunds.reduce((sum,transaction)=>sum+Number(transaction.amount||0),0)],['Sales transactions',sales.length],['Refund transactions',refunds.length],['Stock received (units)',dailyTransactions.filter(transaction=>transaction.type==='Stock In').reduce((sum,transaction)=>sum+Number(transaction.quantity||0),0)],['Stock adjusted out (units)',dailyTransactions.filter(transaction=>transaction.type==='Stock Out').reduce((sum,transaction)=>sum+Number(transaction.quantity||0),0)],['Inventory value',products.reduce((sum,product)=>sum+Number(product.stock||0)*Number(product.cost||0),0)],['Open vendor bills',dailyBills.filter(bill=>bill.status!=='Paid').reduce((sum,bill)=>sum+Number(bill.amount||0),0)],['Paid vendor bills',dailyBills.filter(bill=>bill.status==='Paid').reduce((sum,bill)=>sum+Number(bill.amount||0),0)]]}
+    ]};
+  }
+  function downloadDayEndReport(report){
+    const pageWidth=842,pageHeight=595,margin=36,tableWidth=pageWidth-margin*2;
+    const ascii=value=>String(value??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\x20-\x7E]/g,'?');
+    const escapePdf=value=>ascii(value).replace(/([\\()])/g,'\\$1');
+    const commands=[],pages=[];
+    let page=[],cursorY=0;
+    const text=(x,top,value,size=8,color='0.16 0.22 0.18')=>page.push(`BT /F1 ${size} Tf ${color} rg 1 0 0 1 ${x.toFixed(2)} ${(pageHeight-top-size).toFixed(2)} Tm (${escapePdf(value)}) Tj ET`);
+    const rect=(x,top,width,height,color)=>page.push(`${color} rg ${x.toFixed(2)} ${(pageHeight-top-height).toFixed(2)} ${width.toFixed(2)} ${height.toFixed(2)} re f`);
+    const line=(x1,top1,x2,top2,color='0.88 0.90 0.87')=>page.push(`${color} RG 0.5 w ${x1.toFixed(2)} ${(pageHeight-top1).toFixed(2)} m ${x2.toFixed(2)} ${(pageHeight-top2).toFixed(2)} l S`);
+    const addFooter=()=>{line(margin,pageHeight-27,pageWidth-margin,pageHeight-27);text(margin,pageHeight-22,'TZ Solutions - Inventory Control',7,'0.42 0.47 0.43');text(pageWidth-margin-90,pageHeight-22,'Page __PAGE__ of __TOTAL__',7,'0.42 0.47 0.43');};
+    const startPage=()=>{
+      page=[];
+      rect(0,0,pageWidth,93,'0.10 0.30 0.22');
+      text(margin,17,'TZ SOLUTIONS  /  INVENTORY CONTROL',8,'0.83 0.90 0.84');
+      text(margin,37,report.title,20,'1 1 1');
+      text(margin,70,`Business date: ${report.filename.slice(0,10)}     Generated: ${new Date().toLocaleString()}`,8,'0.86 0.91 0.87');
+      cursorY=112;
+    };
+    const headers=(report.rows[0]||[]).map(value=>ascii(value));
+    const columnCount=Math.max(headers.length,1),columnWidth=tableWidth/columnCount,fontSize=columnCount>7?6.5:7.5,padding=5;
+    const wrap=(value,maxChars)=>{
+      const words=ascii(value).split(/\s+/);
+      const lines=[];
+      let current='';
+      for(const word of words){
+        if(word.length>maxChars){
+          if(current){lines.push(current);current='';}
+          for(let index=0;index<word.length;index+=maxChars)lines.push(word.slice(index,index+maxChars));
+        }else if(!current)current=word;
+        else if((current+' '+word).length<=maxChars)current+=' '+word;
+        else{lines.push(current);current=word;}
+      }
+      if(current||!lines.length)lines.push(current);
+      return lines;
+    };
+    const drawHeader=()=>{
+      const wrapped=headers.map(value=>wrap(value,Math.max(5,Math.floor((columnWidth-padding*2)/(fontSize*0.53)))));
+      const height=Math.max(25,...wrapped.map(lines=>lines.length*(fontSize+2)+8));
+      rect(margin,cursorY,tableWidth,height,'0.12 0.40 0.30');
+      wrapped.forEach((lines,column)=>lines.forEach((value,index)=>text(margin+column*columnWidth+padding,cursorY+5+index*(fontSize+2),value,fontSize,'1 1 1')));
+      cursorY+=height;
+      return height;
+    };
+    const rows=report.rows.slice(1);
+    startPage();
+    drawHeader();
+    rows.forEach((row,rowIndex)=>{
+      const wrapped=row.map(value=>wrap(value,Math.max(5,Math.floor((columnWidth-padding*2)/(fontSize*0.53)))));
+      const rowHeight=Math.max(23,...wrapped.map(lines=>lines.length*(fontSize+2)+8));
+      if(cursorY+rowHeight>pageHeight-37){addFooter();pages.push(page.join('\n'));startPage();drawHeader();}
+      if(rowIndex%2===0)rect(margin,cursorY,tableWidth,rowHeight,'0.95 0.96 0.94');
+      wrapped.forEach((lines,column)=>lines.forEach((value,index)=>text(margin+column*columnWidth+padding,cursorY+5+index*(fontSize+2),value,fontSize)));
+      for(let column=0;column<=columnCount;column++)line(margin+column*columnWidth,cursorY,margin+column*columnWidth,cursorY+rowHeight);
+      line(margin,cursorY+rowHeight,margin+tableWidth,cursorY+rowHeight);
+      cursorY+=rowHeight;
+    });
+    addFooter();
+    pages.push(page.join('\n'));
+    const objects=[null,'<< /Type /Catalog /Pages 2 0 R >>',null,'<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>'];
+    const pageIds=[];
+    pages.forEach((content,index)=>{
+      const pageId=4+index*2,contentId=pageId+1;
+      pageIds.push(`${pageId} 0 R`);
+      const stream=content.replace('__PAGE__',String(index+1)).replace('__TOTAL__',String(pages.length));
+      objects[pageId]=`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidth} ${pageHeight}] /Resources << /Font << /F1 3 0 R >> >> /Contents ${contentId} 0 R >>`;
+      objects[contentId]=`<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`;
+    });
+    objects[2]=`<< /Type /Pages /Kids [${pageIds.join(' ')}] /Count ${pages.length} >>`;
+    let pdf='%PDF-1.4\n',offsets=[0];
+    for(let index=1;index<objects.length;index++){offsets[index]=pdf.length;pdf+=`${index} 0 obj\n${objects[index]}\nendobj\n`;}
+    const xrefOffset=pdf.length;
+    pdf+=`xref\n0 ${objects.length}\n0000000000 65535 f \n`;
+    for(let index=1;index<objects.length;index++)pdf+=`${String(offsets[index]).padStart(10,'0')} 00000 n \n`;
+    pdf+=`trailer\n<< /Size ${objects.length} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
+    const link=document.createElement('a');
+    link.href=URL.createObjectURL(new Blob([pdf],{type:'application/pdf'}));
+    link.download=report.filename;
+    link.click();
+    setTimeout(()=>URL.revokeObjectURL(link.href),1000);
+    showToast(`${report.title} downloaded.`);
+  }
+  function renderDayEndReportHistory(){
+    const rows=[...dayEndReports].sort((left,right)=>right.date.localeCompare(left.date)).map(record=>`<tr><td class="qty">${escapeHtml(record.date)}</td><td>${escapeHtml(record.generatedBy||'')}</td><td>${escapeHtml(record.generatedAt?new Date(record.generatedAt).toLocaleString():'')}</td><td>${(record.reports||[]).map(report=>`<button class="small-button" data-day-report="${escapeHtml(record.date)}" data-report-type="${escapeHtml(report.type)}">${escapeHtml(report.title)} ↓</button>`).join(' ')}</td></tr>`).join('');
+    return `<section class="panel table-panel" style="margin-top:14px"><div class="panel-head"><div><div class="panel-title">Generated daily reports</div><div class="panel-desc">Download the saved end-of-day report snapshots.</div></div><span class="mini-metric">${dayEndReports.length} days closed</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Business date</th><th>Closed by</th><th>Generated</th><th>Reports</th></tr></thead><tbody>${rows||'<tr><td colspan="4" class="empty-state">No daily reports generated yet.</td></tr>'}</tbody></table></div></section>`;
+  }
+  async function loadDayEndReports(){
+    if(location.protocol==='file:')return;
+    try{
+      const response=await fetch('/api/day-end');
+      const result=await response.json();
+      if(!response.ok)throw new Error(result.error||'Could not load day-end reports.');
+      dayEndReports=result.reports||[];
+      localStorage.setItem('ledgerlot-day-end-reports',JSON.stringify(dayEndReports));
+      if(active==='Day-End')render();
+    }catch(error){showToast(error.message||'Could not load day-end reports.');}
+  }
+  async function executeDayEnd(){
+    const day=localDayKey();
+    if(dayEndRunning)return;
+    if(dayEndReports.some(record=>record.date===day)){
+      showToast('Day-end accounting has already been completed today.');
+      return;
+    }
+    dayEndRunning=true;
+    const button=$('page').querySelector('[data-action="close-day"]');
+    if(button){button.disabled=true;button.textContent='Generating reports…';}
+    try{
+      const snapshot=createDayEndReports(day);
+      let record={...snapshot,generatedAt:new Date().toISOString(),generatedBy:currentUser?.name||'Local user'};
+      if(location.protocol!=='file:'){
+        const response=await fetch('/api/day-end',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(snapshot)});
+        const result=await response.json();
+        if(response.status===409){
+          if(result.report&&!dayEndReports.some(item=>item.date===result.report.date))dayEndReports.push(result.report);
+          localStorage.setItem('ledgerlot-day-end-reports',JSON.stringify(dayEndReports));
+          showToast('Day-end accounting has already been completed today.');
+          render();
+          return;
+        }
+        if(!response.ok)throw new Error(result.error||'Could not generate day-end reports.');
+        record=result.report;
+      }
+      dayEndReports=[...dayEndReports.filter(item=>item.date!==day),record];
+      localStorage.setItem('ledgerlot-day-end-reports',JSON.stringify(dayEndReports));
+      logAudit('Day-end closed',`Daily reports generated for ${day}`);
+      showToast('Day-end accounting completed. Four reports are ready to download.');
+      render();
+    }catch(error){
+      showToast(error.message||'Could not generate day-end reports.');
+      if(button){button.disabled=false;button.textContent='Close today';}
+    }finally{dayEndRunning=false;}
+  }
   function queueInventorySync(){
     if(location.protocol==='file:')return;
     clearTimeout(inventorySyncTimer);
@@ -116,7 +246,7 @@
   function logAudit(action,detail,user=currentUser?.name||'System'){
     const time='Today, '+new Intl.DateTimeFormat('en-US',{hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());
     const transactionType={'Stock received':'Stock In','Inventory adjusted':'Stock Out','Sale recorded':'Sale','Refund approved':'Refund'}[action];
-    if(transactionType&&transactions[0]?.type===transactionType)transactions[0].user=user;
+    if(transactionType&&transactions[0]?.type===transactionType){transactions[0].user=user;transactions[0].day||=localDayKey();}
     audit.unshift({action,detail,user,time});
     if(['Stock received','Inventory adjusted','Sale recorded','Refund approved','Product created'].includes(action)){
       const movedProduct=products.find(product=>detail.includes(product.name));
@@ -261,7 +391,7 @@
     if(['Sales','Refunds'].includes(active)){const isRefund=active==='Refunds';const list=transactions.filter(t=>t.type===(isRefund?'Refund':'Sale'));return `${heading(isRefund?'Refunds':'Sales',isRefund?'Review returned items and approved refunds.':'Review completed sales and customer transactions.',`<button class="primary-button" data-action="${isRefund?'refund':'sale'}">＋ ${isRefund?'Process refund':'New sale'}</button>`)}${stats(isRefund?[['Refunds this month',list.length,'Processed transactions','↩'],['Refund value',money(list.reduce((s,t)=>s+t.amount,0)),'Returned to customers','−'],['Items returned',list.reduce((s,t)=>s+t.quantity,0),'Units back in stock','▦']]:[['Sales today',money(list.reduce((s,t)=>s+t.amount,0)),'Net completed sales','↗'],['Transactions',list.length,'All recorded sales','≡'],['Units sold',list.reduce((s,t)=>s+t.quantity,0),'Across recorded sales','↓']])}<div class="toolbar" style="margin-top:16px"><label class="search-box"><span class="search-glyph">⌕</span><input id="tableSearch" placeholder="Search transactions" value="${escapeHtml(search)}"></label><span class="mini-metric">${list.length} ${isRefund?'refunds':'sales'}</span></div><section class="panel table-panel"><div class="table-wrap"><table class="data-table"><thead><tr><th>Transaction</th><th>Status</th><th>Product</th><th>Qty</th><th>Amount</th><th>Reference</th><th>Date</th><th>Processed by</th></tr></thead><tbody id="transactionTableBody">${transactionRows(list)}</tbody></table></div></section>`;}
     if(active==='Vendors'){return `${heading('Vendor directory','Supplier contacts and replenishment status.','<button class="primary-button" data-action="vendor">＋ Add vendor</button>')}${stats([['Active vendors',vendors.length,'Approved suppliers','◇'],['Items to reorder',products.filter(p=>p.stock<=p.reorder).length,'Across '+new Set(products.filter(p=>p.stock<=p.reorder).map(p=>p.vendor)).size+' vendors','!'],['Open purchase orders','3','Awaiting delivery','↓']])}<div class="toolbar" style="margin-top:16px"><label class="search-box"><span class="search-glyph">⌕</span><input id="tableSearch" placeholder="Search vendors" value="${escapeHtml(search)}"></label><button class="secondary-button" data-action="notify">Send low-stock notices</button></div><section class="panel table-panel"><div class="table-wrap"><table class="data-table"><thead><tr><th>Vendor</th><th>Contact</th><th>Email</th><th>Products</th><th>Lead time</th><th>Status</th><th>Action</th></tr></thead><tbody id="vendorTableBody">${vendors.map(v=>`<tr><td class="product-name">${escapeHtml(v.name)}</td><td>${escapeHtml(v.contact)}</td><td>${escapeHtml(v.email)}</td><td class="qty">${v.products}</td><td>${escapeHtml(v.lead)}</td><td>${pill(v.status)}</td><td><button class="small-button" data-vendor="${escapeHtml(v.name)}">Email vendor</button></td></tr>`).join('')}</tbody></table></div></section>`;}
     if(active==='Day-End'){const sales=transactions.filter(t=>t.type==='Sale').reduce((s,t)=>s+t.amount,0),refund=transactions.filter(t=>t.type==='Refund').reduce((s,t)=>s+t.amount,0);return `${heading('Day-end accounting','Daily sales, refunds, and inventory movement in one place.','<button class="primary-button" data-action="close-day">Close today</button>')}${stats([['Gross sales',money(sales),'Completed transactions','↗'],['Refunds',money(refund),'Customer returns','↩'],['Net sales',money(sales-refund),'Gross sales less refunds','◈'],['Transactions',transactions.length,'All activity today','≡']])}<div class="lower-grid" style="margin-top:16px"><section class="panel"><div class="panel-head"><div><div class="panel-title">Daily reconciliation</div><div class="panel-desc">Today · USD</div></div><span class="pill good">Open</span></div><div class="settings-panel"><div class="setting-row"><span>Sales revenue</span><b>${money(sales)}</b></div><div class="setting-row"><span>Refunds &amp; returns</span><b>− ${money(refund)}</b></div><div class="setting-row"><span>Net revenue</span><b>${money(sales-refund)}</b></div><div class="setting-row"><span>Stock received</span><b>${transactions.filter(t=>t.type==='Stock In').reduce((s,t)=>s+t.quantity,0)} units</b></div><div class="setting-row"><span>Stock adjusted out</span><b>${transactions.filter(t=>t.type==='Stock Out').reduce((s,t)=>s+t.quantity,0)} units</b></div></div></section><section class="panel"><div class="panel-head"><div><div class="panel-title">Close-of-day checklist</div><div class="panel-desc">Review before finalizing</div></div></div><div class="settings-panel"><div class="setting-row"><span>Transactions reconciled</span>${pill('Complete')}</div><div class="setting-row"><span>Refunds reviewed</span>${pill('Complete')}</div><div class="setting-row"><span>Low-stock items reviewed</span>${pill(products.some(p=>p.stock<=p.reorder)?'Pending':'Complete')}</div><div class="setting-row"><span>Audit log up to date</span>${pill('Complete')}</div></div></section></div>`;}
-    if(active==='Users & Roles'){return `${heading('Users & roles','Manage access and protect sensitive operations.','<button class="primary-button" data-action="user">＋ Invite user</button>')}<div class="section-grid" style="margin-top:8px">${[['Users','3','2 active now'],['Roles','3','Administrator · Manager · Staff'],['Access policy','Role-based','Least-privilege access']].map(a=>`<article class="panel info-panel"><div class="info-label">${a[0]}</div><div class="info-number">${a[1]}</div><div class="info-foot">${a[2]}</div></article>`).join('')}</div><div class="settings-grid"><section class="panel settings-panel"><h2>Team members</h2>${[['Alex Morgan','Administrator','alex@ledgerlot.example'],['Jamie Lee','Manager','jamie@ledgerlot.example'],['Taylor Chen','Staff','taylor@ledgerlot.example']].map(([n,r,e])=>`<div class="setting-row"><span><b>${n}</b><br><small style="color:var(--muted)">${e}</small></span><span>${r}</span></div>`).join('')}</section><section class="panel settings-panel"><h2>Role permissions</h2>${[['Administrator','Full system access'],['Manager','Inventory, sales, reports'],['Staff','Stock movement, sales']].map(([n,d])=>`<div class="setting-row"><span><b>${n}</b></span><span>${d}</span></div>`).join('')}</section></div>`;}
+    if(active==='Users & Roles'){return `${heading('Users & roles','Manage access and protect sensitive operations.','<button class="primary-button" data-action="user">＋ Invite user</button>')}<div class="section-grid" style="margin-top:8px">${[['Configured roles',String(availableRoles.length),'Accounts configured on this server'],['Role types','3','Administrator · Manager · Staff'],['Access policy','Role-based','Least-privilege access']].map(a=>`<article class="panel info-panel"><div class="info-label">${a[0]}</div><div class="info-number">${a[1]}</div><div class="info-foot">${a[2]}</div></article>`).join('')}</div><div class="settings-grid"><section class="panel settings-panel"><h2>Configured roles</h2>${availableRoles.map(role=>`<div class="setting-row"><span><b>${escapeHtml(role)}</b></span><span>Configured</span></div>`).join('')||'<div class="empty-state">No role accounts are configured on this server.</div>'}</section><section class="panel settings-panel"><h2>Role permissions</h2>${[['Administrator','Full system access'],['Manager','Inventory, sales, reports'],['Staff','Stock movement, sales']].map(([n,d])=>`<div class="setting-row"><span><b>${n}</b></span><span>${d}</span></div>`).join('')}</section></div>`;}
     if(active==='Notifications'){const lowProducts=products.filter(p=>p.stock<=p.reorder);return `${heading('Notifications','Automated vendor alerts and system notices.','<button class="primary-button" data-action="notify">Send low-stock notices</button>')}${stats([['Low-stock alerts',lowProducts.length,'Products below reorder point','!'],['Vendors notified',new Set(lowProducts.map(p=>p.vendor)).size,'Eligible suppliers','◇'],['Email delivery','Configured','Vendor notifications enabled','✉']])}<section class="panel table-panel" style="margin-top:16px"><div class="panel-head"><div><div class="panel-title">Reorder alerts</div><div class="panel-desc">Threshold-based vendor notifications</div></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Product</th><th>On hand</th><th>Reorder at</th><th>Vendor</th><th>Contact</th><th>Status</th></tr></thead><tbody>${lowProducts.map(p=>{const v=vendors.find(x=>x.name===p.vendor);return `<tr><td><div class="product-name">${escapeHtml(p.name)}</div><div class="product-sku">${escapeHtml(p.id)}</div></td><td class="qty">${p.stock}</td><td class="qty">${p.reorder}</td><td>${escapeHtml(p.vendor)}</td><td>${escapeHtml(v?.email||'No vendor email')}</td><td>${pill('Pending')}</td></tr>`;}).join('')||'<tr><td colspan="6" class="empty-state">No products need reordering.</td></tr>'}</tbody></table></div></section><section class="panel settings-panel" style="margin-top:14px"><h2>Email preferences</h2><div class="setting-row"><span>Automatically email vendor at reorder point</span><span>${pill('Enabled')}</span></div><div class="setting-row"><span>Daily inventory summary</span><span>${pill('Enabled')}</span></div></section>`;}
     if(active==='Reports'){return `${heading('Reports & exports','Operational, financial, and inventory reporting.')}<div class="section-grid" style="margin-top:8px">${[['Inventory valuation','Current quantity × unit cost','Export inventory'],['Sales summary','Sales and refunds by transaction','Export transactions'],['Stock movement','Receipts, adjustments, and returns','Export movement']].map((r,i)=>`<article class="panel info-panel"><div class="info-label">REPORT 0${i+1}</div><div class="info-number" style="font-size:16px">${r[0]}</div><div class="info-foot" style="margin:7px 0 15px">${r[1]}</div><button class="secondary-button" data-export="${i}">${r[2]} ↓</button></article>`).join('')}</div><section class="panel settings-panel"><h2>Report contents</h2><div class="setting-row"><span>Inventory value</span><b>${money(products.reduce((s,p)=>s+p.stock*p.cost,0))}</b></div><div class="setting-row"><span>Sales recorded</span><b>${transactions.filter(t=>t.type==='Sale').length} transactions</b></div><div class="setting-row"><span>Current low-stock products</span><b>${products.filter(p=>p.stock<=p.reorder).length} items</b></div></section>`;}
     if(active==='Audit Log'){return `${heading('Audit log','A traceable record of important system activity.','<button class="secondary-button" data-export="audit">Export log ↓</button>')}<div class="toolbar" style="margin-top:2px"><label class="search-box"><span class="search-glyph">⌕</span><input id="tableSearch" placeholder="Search activity" value="${escapeHtml(search)}"></label><span class="mini-metric">${audit.length} events · retained locally</span></div><section class="panel table-panel"><div class="table-wrap"><table class="data-table"><thead><tr><th>Activity</th><th>Details</th><th>User</th><th>Timestamp</th></tr></thead><tbody id="auditTableBody">${audit.map(a=>`<tr><td class="product-name">${escapeHtml(a.action)}</td><td>${escapeHtml(a.detail)}</td><td>${escapeHtml(a.user)}</td><td class="qty">${escapeHtml(a.time)}</td></tr>`).join('')}</tbody></table></div></section>`;}
@@ -300,6 +430,13 @@
     });
     const summaries=[...grouped.entries()].sort((left,right)=>right[1].total-left[1].total);
     return `<section class="panel table-panel" style="margin-top:14px"><div class="panel-head"><div><div class="panel-title">Sales by user</div><div class="panel-desc">Recorded sales grouped by team member</div></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>User</th><th>Sales</th><th>Units</th><th>Sales total</th></tr></thead><tbody>${summaries.map(([user,summary])=>`<tr><td class="product-name">${escapeHtml(user)}</td><td class="qty">${summary.count}</td><td class="qty">${summary.units}</td><td>${money(summary.total)}</td></tr>`).join('')||'<tr><td colspan="4" class="empty-state">No sales have been recorded.</td></tr>'}</tbody></table></div></section><section class="panel table-panel" style="margin-top:14px"><div class="panel-head"><div><div class="panel-title">User-wise sales records</div><div class="panel-desc">Individual sale transactions with the processing user</div></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Date</th><th>Sale ID</th><th>User</th><th>Product</th><th>SKU</th><th>Units</th><th>Amount</th><th>Reference</th></tr></thead><tbody>${sales.map(transaction=>`<tr><td>${escapeHtml(transaction.date)}</td><td class="qty">${escapeHtml(transaction.id)}</td><td>${escapeHtml(transaction.user||'Unknown')}</td><td>${escapeHtml(transaction.product)}</td><td class="qty">${escapeHtml(transaction.sku)}</td><td class="qty">${transaction.quantity}</td><td>${money(transaction.amount)}</td><td>${escapeHtml(transaction.reference)}</td></tr>`).join('')||'<tr><td colspan="8" class="empty-state">No sales have been recorded.</td></tr>'}</tbody></table></div></section>`;
+  }
+  function renderDayEndPage(){
+    const day=localDayKey(),dailyTransactions=transactionsForDay(day),closed=dayEndReports.some(record=>record.date===day);
+    const sales=dailyTransactions.filter(transaction=>transaction.type==='Sale').reduce((sum,transaction)=>sum+Number(transaction.amount||0),0);
+    const refunds=dailyTransactions.filter(transaction=>transaction.type==='Refund').reduce((sum,transaction)=>sum+Number(transaction.amount||0),0);
+    const closeAction=`<button class="primary-button" data-action="close-day" ${closed||dayEndRunning?'disabled':''}>${closed?'Completed today':dayEndRunning?'Generating reports…':'Close today & generate reports'}</button>`;
+    return `${heading('Day-end accounting',`Daily reconciliation and report generation for ${day}.`,closeAction)}${stats([['Gross sales',money(sales),'Today’s completed sales','↗'],['Refunds',money(refunds),'Today’s customer returns','↩'],['Net sales',money(sales-refunds),'Sales less refunds','◈'],['Transactions',dailyTransactions.length,'Today’s recorded activity','≡']])}<div class="lower-grid" style="margin-top:16px"><section class="panel"><div class="panel-head"><div><div class="panel-title">Daily reconciliation</div><div class="panel-desc">${escapeHtml(day)} · USD</div></div>${pill(closed?'Complete':'Open')}</div><div class="settings-panel"><div class="setting-row"><span>Sales revenue</span><b>${money(sales)}</b></div><div class="setting-row"><span>Refunds &amp; returns</span><b>− ${money(refunds)}</b></div><div class="setting-row"><span>Net revenue</span><b>${money(sales-refunds)}</b></div><div class="setting-row"><span>Stock received</span><b>${dailyTransactions.filter(transaction=>transaction.type==='Stock In').reduce((sum,transaction)=>sum+Number(transaction.quantity||0),0)} units</b></div><div class="setting-row"><span>Stock adjusted out</span><b>${dailyTransactions.filter(transaction=>transaction.type==='Stock Out').reduce((sum,transaction)=>sum+Number(transaction.quantity||0),0)} units</b></div></div></section><section class="panel"><div class="panel-head"><div><div class="panel-title">Close-of-day checklist</div><div class="panel-desc">Review before finalizing</div></div></div><div class="settings-panel"><div class="setting-row"><span>Transactions reconciled</span>${pill('Complete')}</div><div class="setting-row"><span>Refunds reviewed</span>${pill('Complete')}</div><div class="setting-row"><span>Low-stock items reviewed</span>${pill(products.some(product=>product.stock<=product.reorder)?'Pending':'Complete')}</div><div class="setting-row"><span>Daily report generation</span>${pill(closed?'Complete':'Pending')}</div></div></section></div>`;
   }
   function renderAuthenticationAudit(){
     const rows=serverAuthEvents.map(event=>`<tr><td class="product-name">${escapeHtml(event.action)}</td><td>${escapeHtml(event.user)}</td><td>${escapeHtml(event.role)}</td><td>${escapeHtml(event.email)}</td><td class="qty">${escapeHtml(new Date(event.time).toLocaleString())}</td></tr>`).join('');
@@ -348,8 +485,8 @@
   }
   function render(){
     refreshExpiryAlerts();
-    $('page').innerHTML=active==='Overview'?renderDashboard():active==='Vendor Bills'?renderVendorBillsPage():modulePage();
-    if(active==='Day-End')$('page').insertAdjacentHTML('beforeend',renderBillLedger());
+    $('page').innerHTML=active==='Overview'?renderDashboard():active==='Vendor Bills'?renderVendorBillsPage():active==='Day-End'?renderDayEndPage():modulePage();
+    if(active==='Day-End')$('page').insertAdjacentHTML('beforeend',renderBillLedger()+renderDayEndReportHistory());
     if(active==='Vendor Bills')$('page').insertAdjacentHTML('beforeend',renderOwnerSignaturePanel());
     if(active==='Reports')$('page').insertAdjacentHTML('beforeend',renderUserSalesReport());
     if(active==='Audit Log')$('page').insertAdjacentHTML('beforeend',renderAuthenticationAudit());
@@ -365,7 +502,7 @@
     if($('salesChart')){chart();$('chartPeriod').addEventListener('change',chart);}
     if(active==='Audit Log')loadAuthenticationAudit();
   }
-  function bindPage(){document.querySelectorAll('[data-nav]').forEach(button=>button.addEventListener('click',()=>navigate(button.dataset.nav)));document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>openModal(button.dataset.action)));document.querySelectorAll('[data-export]').forEach(button=>button.addEventListener('click',()=>exportData(button.dataset.export)));document.querySelectorAll('[data-vendor]').forEach(button=>button.addEventListener('click',()=>notifyVendor(button.dataset.vendor)));const searchInput=$('tableSearch');if(searchInput)searchInput.addEventListener('input',()=>{search=searchInput.value;filterTables();});const stockFilter=$('stockFilter'),categoryFilter=$('categoryFilter');[stockFilter,categoryFilter].filter(Boolean).forEach(el=>el.addEventListener('change',filterTables));}
+  function bindPage(){document.querySelectorAll('[data-nav]').forEach(button=>button.addEventListener('click',()=>navigate(button.dataset.nav)));document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>button.dataset.action==='close-day'?executeDayEnd():openModal(button.dataset.action)));document.querySelectorAll('[data-export]').forEach(button=>button.addEventListener('click',()=>exportData(button.dataset.export)));document.querySelectorAll('[data-vendor]').forEach(button=>button.addEventListener('click',()=>notifyVendor(button.dataset.vendor)));const searchInput=$('tableSearch');if(searchInput)searchInput.addEventListener('input',()=>{search=searchInput.value;filterTables();});const stockFilter=$('stockFilter'),categoryFilter=$('categoryFilter');[stockFilter,categoryFilter].filter(Boolean).forEach(el=>el.addEventListener('change',filterTables));}
   function filterTables(){const query=(search||'').toLowerCase();if($('productTableBody')){const stockFilter=$('stockFilter')?.value||'All stock levels',category=$('categoryFilter')?.value||'All categories';const list=products.filter(p=>(p.name+' '+p.id+' '+p.vendor).toLowerCase().includes(query)&&(stockFilter==='All stock levels'||(stockFilter==='Low stock'?p.stock<=p.reorder:p.stock>p.reorder))&&(category==='All categories'||p.category===category));$('productTableBody').innerHTML=productRows(list)||'<tr><td colspan="7" class="empty-state">No matching products.</td></tr>';if($('rowCount'))$('rowCount').textContent=list.length+' products';}if($('vendorTableBody'))$('vendorTableBody').innerHTML=vendors.filter(v=>(v.name+' '+v.contact+' '+v.email).toLowerCase().includes(query)).map(v=>`<tr><td class="product-name">${escapeHtml(v.name)}</td><td>${escapeHtml(v.contact)}</td><td>${escapeHtml(v.email)}</td><td class="qty">${v.products}</td><td>${escapeHtml(v.lead)}</td><td>${pill(v.status)}</td><td><button class="small-button" data-vendor="${escapeHtml(v.name)}">Email vendor</button></td></tr>`).join('');if($('transactionTableBody'))$('transactionTableBody').innerHTML=transactionRows(transactions.filter(t=>t.type===(active==='Refunds'?'Refund':'Sale')).filter(t=>(t.product+' '+t.id+' '+t.reference).toLowerCase().includes(query)))||'<tr><td colspan="8" class="empty-state">No matching transactions.</td></tr>';if($('auditTableBody'))$('auditTableBody').innerHTML=audit.filter(a=>(a.action+' '+a.detail+' '+a.user).toLowerCase().includes(query)).map(a=>`<tr><td class="product-name">${escapeHtml(a.action)}</td><td>${escapeHtml(a.detail)}</td><td>${escapeHtml(a.user)}</td><td class="qty">${escapeHtml(a.time)}</td></tr>`).join('');document.querySelectorAll('[data-vendor]').forEach(button=>button.addEventListener('click',()=>notifyVendor(button.dataset.vendor)));}
   function openModal(type){const config={product:['Add product','Create an inventory record.'],stockin:['Receive stock','Add delivered units to inventory.'],stockout:['Record stock adjustment','Remove damaged, lost, or transferred units.'],sale:['Record a sale','Record a completed customer sale.'],refund:['Process a refund','Return units to inventory and record the refund.'],vendor:['Add vendor','Add a supplier to your vendor directory.'],user:['Invite team member','Add a user and assign an access role.']};if(!config[type]){showToast('Quick action is available from the relevant module.');return;}const [title,subtitle]=config[type],productField=(type==='stockin'||type==='stockout'||type==='sale'||type==='refund')?`<div class="field full"><label for="txProduct">Product</label><select id="txProduct" required>${products.map(p=>`<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)} · ${escapeHtml(p.id)} · ${p.stock} on hand</option>`).join('')}</select></div><div class="field"><label for="txQty">Quantity</label><input id="txQty" type="number" min="1" step="1" value="1" required></div>${type==='stockin'?'<div class="field"><label for="txRef">Purchase order</label><input id="txRef" placeholder="PO-0000"></div>':type==='stockout'?'<div class="field"><label for="txRef">Reason</label><select id="txRef"><option>Adjustment</option><option>Damaged</option><option>Transfer</option><option>Loss</option></select></div>':type==='sale'?'<div class="field"><label for="txRef">Order reference</label><input id="txRef" placeholder="SO-0000"></div>':'<div class="field"><label for="txRef">Refund reference</label><input id="txRef" placeholder="RF-0000"></div>'}`:'';const fields=type==='product'?`<div class="field full"><label for="newName">Product name</label><input id="newName" required placeholder="Product name"></div><div class="field"><label for="newSku">SKU</label><input id="newSku" required placeholder="PR-0000"></div><div class="field"><label for="newCategory">Category</label><input id="newCategory" required placeholder="Home"></div><div class="field"><label for="newStock">Opening stock</label><input id="newStock" type="number" min="0" value="0"></div><div class="field"><label for="newReorder">Reorder point</label><input id="newReorder" type="number" min="0" value="10"></div><div class="field"><label for="newCost">Unit cost ($)</label><input id="newCost" type="number" min="0" step="0.01" required></div><div class="field"><label for="newPrice">Sale price ($)</label><input id="newPrice" type="number" min="0" step="0.01" required></div><div class="field full"><label for="newVendor">Vendor</label><select id="newVendor">${vendors.map(v=>`<option>${escapeHtml(v.name)}</option>`).join('')}</select></div>`:type==='vendor'?'<div class="field full"><label for="vendorName">Vendor name</label><input id="vendorName" required></div><div class="field"><label for="vendorContact">Contact name</label><input id="vendorContact" required></div><div class="field"><label for="vendorEmail">Email</label><input id="vendorEmail" type="email" required></div><div class="field"><label for="vendorLead">Lead time</label><input id="vendorLead" placeholder="5 days"></div>':type==='user'?'<div class="field full"><label for="userName">Full name</label><input id="userName" required></div><div class="field"><label for="userEmail">Email</label><input id="userEmail" type="email" required></div><div class="field"><label for="userRole">Role</label><select id="userRole"><option>Staff</option><option>Manager</option><option>Administrator</option></select></div>':productField; $('overlay').innerHTML=`<div class="modal-backdrop" id="modalBackdrop"><form class="modal" id="entryForm"><div class="modal-head"><div><h2>${title}</h2><div class="modal-subtitle">${subtitle}</div></div><button type="button" class="close-button" id="closeModal" aria-label="Close">×</button></div><div class="form-grid">${fields}</div><div class="modal-actions"><button type="button" class="secondary-button" id="cancelModal">Cancel</button><button type="submit" class="primary-button">${type==='product'?'Add product':type==='vendor'?'Add vendor':type==='user'?'Send invite':'Save transaction'}</button></div></form></div>`;$('closeModal').addEventListener('click',closeModal);$('cancelModal').addEventListener('click',closeModal);$('modalBackdrop').addEventListener('click',e=>{if(e.target.id==='modalBackdrop')closeModal();});$('entryForm').addEventListener('submit',e=>{e.preventDefault();submitModal(type);});}
   function closeModal(){$('overlay').innerHTML='';}
@@ -559,6 +696,7 @@
     setNav();
     render();
     refreshGmailStatus();
+    loadDayEndReports();
     syncInventory();
   }
   async function initializeApp(){
@@ -613,8 +751,13 @@
     const button=event.target.closest('[data-action="notify"]');
     if(button){event.preventDefault();event.stopImmediatePropagation();showEmailChoices();}
   },true);
-  document.addEventListener('click',e=>{if(e.target.matches('[data-nav]')&&!e.target.closest('#navList,#adminNav'))navigate(e.target.dataset.nav);if(e.target.id==='closeDay')showToast('Day-end close recorded.');});
-  document.addEventListener('click',e=>{const close=e.target.closest('[data-action="close-day"]');if(close){logAudit('Day-end closed','Daily reconciliation finalized');showToast('Day-end close recorded.');render();}});
+  document.addEventListener('click',event=>{
+    const button=event.target.closest('[data-day-report]');
+    if(!button)return;
+    const record=dayEndReports.find(item=>item.date===button.dataset.dayReport);
+    const report=record?.reports.find(item=>item.type===button.dataset.reportType);
+    if(report)downloadDayEndReport(report);
+  });
 })();
 </script>
 </body>
