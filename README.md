@@ -18,7 +18,11 @@ This is a local role-authenticated app. The server binds only to `127.0.0.1`; do
 
 ## Role-based sign-in
 
-Configure `ADMIN_EMAIL` and `ADMIN_PASSWORD` to enable the Administrator account. Configure `MANAGER_EMAIL`/`MANAGER_PASSWORD` and `STAFF_EMAIL`/`STAFF_PASSWORD` to enable those roles. Each role signs in with its matching email, password, and role selection. Use unique, strong passwords; credentials stay in `.env` and are checked by the local server.
+Configure `ADMIN_EMAIL` and `ADMIN_PASSWORD` to enable the built-in TZ Solutions Administrator account. Configure `MANAGER_EMAIL`/`MANAGER_PASSWORD` and `STAFF_EMAIL`/`STAFF_PASSWORD` to enable those built-in roles.
+
+Organizations can also be created from the sign-in page. Signup creates a separate inventory workspace and its first Administrator account. Choose the organization on the sign-in page, then enter the matching role, email, and password. Organization Administrators can create additional Administrator, Manager, and Staff accounts in Users & Roles; set a password of at least 12 characters and share it with the user securely. Organization accounts and workspace inventory are stored by the server, with passwords stored as salted scrypt hashes. Browser-held transactions, bills, and activity are namespaced by organization and synchronized for organization accounts.
+
+The built-in TZ Solutions organization remains available for existing environment-configured accounts and existing inventory data. Use unique, strong passwords; environment credentials stay in `.env` and are checked by the local server.
 
 The Administrator can open every module. Managers can access workspace modules except Users & Roles. Staff can access Overview, Products, Stock In, Stock Out, and Sales. Sessions expire after eight hours or when the server restarts. The app requires the localhost URL; the `file://` page does not authenticate or synchronize data.
 
@@ -32,7 +36,7 @@ Fresh browser storage starts with no sample products, sales, vendors, or activit
 
 1. Rotate any credentials that have been shared, then connect this repository to Netlify or deploy it with the Netlify CLI.
 2. Keep the build command blank. `netlify.toml` sets the publish directory and Functions directory.
-3. Add `GMAIL_USER`, `GMAIL_APP_PASSWORD`, `MAIL_FROM`, and the `ADMIN_*`, `MANAGER_*`, and `STAFF_*` account variables in the Netlify site's environment-variable settings. Use new, unique passwords; never upload `.env`.
+3. Add `GMAIL_USER`, `GMAIL_APP_PASSWORD`, `MAIL_FROM`, and any built-in `ADMIN_*`, `MANAGER_*`, and `STAFF_*` account variables in the Netlify site's environment-variable settings. Organizations may self-register from the sign-in page. Use new, unique passwords; never upload `.env`.
 4. Deploy to production. Netlify Blobs stores inventory, sessions, sent-email deduplication, and authentication audit events. The scheduled function checks expiry alerts hourly on published deploys.
 
 Netlify is a separate deployment: local `data/inventory.json` is excluded and is not migrated automatically. The hosted site starts with its own Netlify Blobs store and browser-local data. Import or recreate production inventory after first sign-in; use the hosted URL for all future edits.

@@ -18,7 +18,7 @@
     .toolbar{display:flex;align-items:center;justify-content:space-between;padding:0 0 12px;gap:10px}.search-box{position:relative;max-width:310px;width:100%}.search-box input{width:100%;height:34px;border:1px solid var(--line);border-radius:6px;background:white;padding:0 12px 0 32px;font-size:11px}.search-glyph{position:absolute;left:11px;top:8px;color:#879089;font-size:12px}.filter-group{display:flex;gap:7px}.filter-select{height:34px;border:1px solid var(--line);border-radius:6px;padding:0 9px;background:#fff;font-size:11px;color:#5c675f}.table-panel{overflow:hidden}.table-summary{padding:12px 15px;border-bottom:1px solid var(--line);font-size:10px;color:var(--muted);display:flex;justify-content:space-between}.empty-state{text-align:center;padding:42px;color:var(--muted);font-size:12px}.mini-metric{font:10px var(--mono);color:var(--muted)}.section-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:14px}.info-panel{padding:16px}.info-panel .info-label{font-size:10px;color:var(--muted)}.info-panel .info-number{font:700 22px var(--display);margin-top:8px}.info-panel .info-foot{font-size:10px;color:var(--muted);margin-top:4px}.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.settings-panel{padding:17px}.settings-panel h2{font:700 13px var(--display);margin:0 0 13px}.setting-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-top:1px solid #eff0eb;font-size:11px}.setting-row span:last-child{color:var(--muted)}
     .modal-backdrop{position:fixed;inset:0;background:#14201888;display:grid;place-items:center;padding:18px;z-index:10;animation:appear .15s ease}.modal{width:min(480px,100%);background:white;border-radius:9px;box-shadow:var(--shadow);padding:20px}.modal-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}.modal h2{font:700 18px var(--display);margin:0}.modal .modal-subtitle{font-size:11px;color:var(--muted);margin-top:4px}.close-button{border:0;background:transparent;color:var(--muted);font-size:21px;line-height:1}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:grid;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:10px;font-weight:600;color:#59645c}.field input,.field select{height:35px;border:1px solid var(--line);border-radius:5px;padding:0 9px;background:#fff;font-size:11px;color:var(--ink)}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:19px}.toast{position:fixed;bottom:21px;right:23px;background:#19251f;color:#f7f8f3;border-radius:7px;padding:11px 15px;font-size:11px;box-shadow:var(--shadow);z-index:20;animation:appear .2s ease}.mobile-menu{display:none}
     .signature-status{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 17px;margin-top:14px}.signature-canvas{display:block;width:100%;height:150px;border:1px solid var(--line);border-radius:6px;background:#fff;touch-action:none;cursor:crosshair}.bill-actions{display:flex;align-items:center;gap:6px}
-    .auth-screen{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;background:var(--paper)}.auth-panel{width:min(420px,100%);background:#fff;border:1px solid var(--line);border-radius:8px;padding:24px;box-shadow:var(--shadow)}.auth-panel .brand{padding:0 0 22px;color:var(--ink)}.auth-panel .brand-sub{color:var(--muted)}.auth-title{font:700 21px var(--display);margin:0}.auth-copy{font-size:12px;color:var(--muted);margin:6px 0 18px}.auth-form{display:grid;gap:12px}.auth-error{color:var(--red);font-size:11px;min-height:16px}.auth-help{font-size:10px;color:var(--muted);margin-top:14px;line-height:1.5}.side-logout{margin-left:auto;border:1px solid #526057;border-radius:5px;background:transparent;color:#d6ded8;padding:5px 8px;font-size:10px}.side-logout:hover{background:#2b4034;color:#fff}
+    .auth-screen{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;background:var(--paper)}.auth-panel{width:min(420px,100%);max-height:calc(100vh - 40px);overflow:auto;background:#fff;border:1px solid var(--line);border-radius:8px;padding:24px;box-shadow:var(--shadow)}.auth-panel .brand{padding:0 0 22px;color:var(--ink)}.auth-panel .brand-sub{color:var(--muted)}.auth-title{font:700 21px var(--display);margin:0}.auth-copy{font-size:12px;color:var(--muted);margin:6px 0 18px}.auth-form{display:grid;gap:12px}.auth-error{color:var(--red);font-size:11px;min-height:16px}.auth-help{font-size:10px;color:var(--muted);margin-top:14px;line-height:1.5}.side-logout{margin-left:auto;border:1px solid #526057;border-radius:5px;background:transparent;color:#d6ded8;padding:5px 8px;font-size:10px}.side-logout:hover{background:#2b4034;color:#fff}
     body.signed-out .app{visibility:hidden;pointer-events:none}
     .chart-key{max-width:65%;min-width:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px}.sales-legend{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:4px 9px}.sales-legend-item{display:inline-flex;align-items:center;gap:4px;color:var(--muted);font-size:9px;white-space:nowrap}.sales-legend-swatch{width:11px;height:2px;display:inline-block;flex:none}
     @media(max-width:1050px){.app{grid-template-columns:210px minmax(0,1fr)}.main{padding:0 22px 32px}.stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-grid{grid-template-columns:minmax(0,1.4fr) minmax(240px,1fr)}}
@@ -45,9 +45,12 @@
   const seedProducts = [];
   const seedTransactions = [];
   const seedVendors = [];
-  const load = (key, fallback) => { try { const value=localStorage.getItem('ledgerlot-'+key); return value ? JSON.parse(value) : fallback; } catch { return fallback; } };
+  let workspaceId='legacy';
+  let localEditRevision=0;
+  const storageKey=key=>`ledgerlot-${workspaceId==='legacy'?'':`${workspaceId}-`}${key}`;
+  const load = (key, fallback) => { try { const value=localStorage.getItem(storageKey(key)); return value ? JSON.parse(value) : fallback; } catch { return fallback; } };
   let products=load('products',seedProducts), transactions=load('transactions',seedTransactions), audit=load('audit',[]), vendors=load('vendors',seedVendors), bills=load('bills',[]);
-  let active='Overview', filter='All', search='', toastTimer, inventorySyncTimer, gmailConfigured=false, currentUser=null, availableRoles=[], serverAuthEvents=[], authAuditLoaded=false, authAuditLoading=false, ownerSignature=load('owner-signature',''), ownerSignatureDate=load('owner-signature-date',''), dayEndReports=load('day-end-reports',[]), dayEndRunning=false;
+  let active='Overview', filter='All', search='', toastTimer, inventorySyncTimer, gmailConfigured=false, currentUser=null, availableRoles=[], organizations=[], organizationUsers=[], organizationUsersLoaded=false, organizationUsersLoading=false, remoteWorkspaceLoaded=false, preferredOrganizationId='', preferredEmail='', serverAuthEvents=[], authAuditLoaded=false, authAuditLoading=false, ownerSignature=load('owner-signature',''), ownerSignatureDate=load('owner-signature-date',''), dayEndReports=load('day-end-reports',[]), dayEndRunning=false;
   const navItems=[['Overview','⌂'],['Products','▦'],['Stock In','↓'],['Stock Out','↑'],['Sales','↗'],['Refunds','↩'],['Vendors','◇'],['Vendor Bills','▧'],['Day-End','≡'],['Reports','▤']];
   const adminItems=[['Users & Roles','♙'],['Notifications','◎'],['Audit Log','◷']];
   const roleAccess={
@@ -56,7 +59,8 @@
     Staff:new Set(['Overview','Products','Stock In','Stock Out','Sales'])
   };
   const $=id=>document.getElementById(id), money=value=>'$'+Number(value||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}), escapeHtml=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const save=()=>{localStorage.setItem('ledgerlot-products',JSON.stringify(products));localStorage.setItem('ledgerlot-transactions',JSON.stringify(transactions));localStorage.setItem('ledgerlot-audit',JSON.stringify(audit));localStorage.setItem('ledgerlot-vendors',JSON.stringify(vendors));localStorage.setItem('ledgerlot-bills',JSON.stringify(bills));queueInventorySync();};
+  const saveWorkspaceLocally=()=>{localStorage.setItem(storageKey('products'),JSON.stringify(products));localStorage.setItem(storageKey('transactions'),JSON.stringify(transactions));localStorage.setItem(storageKey('audit'),JSON.stringify(audit));localStorage.setItem(storageKey('vendors'),JSON.stringify(vendors));localStorage.setItem(storageKey('bills'),JSON.stringify(bills));};
+  const save=()=>{localEditRevision++;saveWorkspaceLocally();queueInventorySync();};
   const localDayKey=(date=new Date())=>`${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
   function transactionsForDay(day){
     const target=new Date(`${day}T00:00:00`);
@@ -173,7 +177,7 @@
       const result=await response.json();
       if(!response.ok)throw new Error(result.error||'Could not load day-end reports.');
       dayEndReports=result.reports||[];
-      localStorage.setItem('ledgerlot-day-end-reports',JSON.stringify(dayEndReports));
+      localStorage.setItem(storageKey('day-end-reports'),JSON.stringify(dayEndReports));
       if(active==='Day-End')render();
     }catch(error){showToast(error.message||'Could not load day-end reports.');}
   }
@@ -195,7 +199,7 @@
         const result=await response.json();
         if(response.status===409){
           if(result.report&&!dayEndReports.some(item=>item.date===result.report.date))dayEndReports.push(result.report);
-          localStorage.setItem('ledgerlot-day-end-reports',JSON.stringify(dayEndReports));
+          localStorage.setItem(storageKey('day-end-reports'),JSON.stringify(dayEndReports));
           showToast('Day-end accounting has already been completed today.');
           render();
           return;
@@ -204,7 +208,7 @@
         record=result.report;
       }
       dayEndReports=[...dayEndReports.filter(item=>item.date!==day),record];
-      localStorage.setItem('ledgerlot-day-end-reports',JSON.stringify(dayEndReports));
+      localStorage.setItem(storageKey('day-end-reports'),JSON.stringify(dayEndReports));
       logAudit('Day-end closed',`Daily reports generated for ${day}`);
       showToast('Day-end accounting completed. Four reports are ready to download.');
       render();
@@ -221,10 +225,27 @@
   async function syncInventory(){
     if(location.protocol==='file:')return;
     try{
-      const response=await fetch('/api/inventory',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({products,vendors})});
+      const revision=localEditRevision;
+      if(workspaceId!=='legacy'&&!remoteWorkspaceLoaded){
+        const savedResponse=await fetch('/api/inventory');
+        const saved=await savedResponse.json();
+        if(!savedResponse.ok)throw new Error(saved.error||'Could not load organization inventory.');
+        if(revision===localEditRevision){
+          products=saved.products||[];
+          vendors=saved.vendors||[];
+          transactions=saved.transactions||[];
+          bills=saved.bills||[];
+          audit=saved.audit||[];
+          saveWorkspaceLocally();
+          render();
+        }
+        remoteWorkspaceLoaded=true;
+      }
+      const response=await fetch('/api/inventory',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({products,vendors,transactions,bills,audit})});
       const result=await response.json();
       if(response.ok){gmailConfigured=Boolean(result.configured);updateEmailDeliveryStatus();}
-    }catch{}
+      else showToast(result.error||'Could not synchronize organization inventory.');
+    }catch(error){showToast(error.message||'Could not synchronize organization inventory.');}
   }
   async function refreshGmailStatus(){
     if(location.protocol==='file:')return;
@@ -285,10 +306,21 @@
   function pill(status){const cls=status==='Low stock'||status==='Pending'||status==='Expired'?'low':status==='Watch'||status==='Scheduled'||status==='Expiring soon'?'watch':'good';return `<span class="pill ${cls}">${escapeHtml(status)}</span>`;}
   function navMarkup(items){const alertCount=products.filter(product=>product.stock<=product.reorder||isExpiryAlert(product)).length;return items.map(([name,icon])=>`<button class="nav-btn ${active===name?'active':''}" data-nav="${escapeHtml(name)}"><span class="nav-icon">${icon}</span><span>${escapeHtml(name)}</span>${name==='Notifications'&&alertCount?'<span class="nav-count">'+alertCount+'</span>':''}</button>`).join('');}
   function canAccessPage(name){return Boolean(currentUser&&roleAccess[currentUser.role]?.has(name));}
+  function loadWorkspaceData(id){
+    workspaceId=id||'legacy';
+    products=load('products',seedProducts);
+    transactions=load('transactions',seedTransactions);
+    audit=load('audit',[]);
+    vendors=load('vendors',seedVendors);
+    bills=load('bills',[]);
+    ownerSignature=load('owner-signature','');
+    ownerSignatureDate=load('owner-signature-date','');
+    dayEndReports=load('day-end-reports',[]);
+  }
   function applyLoggedUser(user){
     currentUser=user;
     $('currentName').textContent=user.name;
-    $('currentRole').textContent=user.role;
+    $('currentRole').textContent=`${user.role} · ${organizations.find(item=>item.id===user.organizationId)?.name||'TZ Solutions'}`;
     $('currentAvatar').textContent=user.name.split(/\s+/).map(part=>part[0]).join('').slice(0,2).toUpperCase();
   }
   function setNav(){
@@ -391,7 +423,7 @@
     if(['Sales','Refunds'].includes(active)){const isRefund=active==='Refunds';const list=transactions.filter(t=>t.type===(isRefund?'Refund':'Sale'));return `${heading(isRefund?'Refunds':'Sales',isRefund?'Review returned items and approved refunds.':'Review completed sales and customer transactions.',`<button class="primary-button" data-action="${isRefund?'refund':'sale'}">＋ ${isRefund?'Process refund':'New sale'}</button>`)}${stats(isRefund?[['Refunds this month',list.length,'Processed transactions','↩'],['Refund value',money(list.reduce((s,t)=>s+t.amount,0)),'Returned to customers','−'],['Items returned',list.reduce((s,t)=>s+t.quantity,0),'Units back in stock','▦']]:[['Sales today',money(list.reduce((s,t)=>s+t.amount,0)),'Net completed sales','↗'],['Transactions',list.length,'All recorded sales','≡'],['Units sold',list.reduce((s,t)=>s+t.quantity,0),'Across recorded sales','↓']])}<div class="toolbar" style="margin-top:16px"><label class="search-box"><span class="search-glyph">⌕</span><input id="tableSearch" placeholder="Search transactions" value="${escapeHtml(search)}"></label><span class="mini-metric">${list.length} ${isRefund?'refunds':'sales'}</span></div><section class="panel table-panel"><div class="table-wrap"><table class="data-table"><thead><tr><th>Transaction</th><th>Status</th><th>Product</th><th>Qty</th><th>Amount</th><th>Reference</th><th>Date</th><th>Processed by</th></tr></thead><tbody id="transactionTableBody">${transactionRows(list)}</tbody></table></div></section>`;}
     if(active==='Vendors'){return `${heading('Vendor directory','Supplier contacts and replenishment status.','<button class="primary-button" data-action="vendor">＋ Add vendor</button>')}${stats([['Active vendors',vendors.length,'Approved suppliers','◇'],['Items to reorder',products.filter(p=>p.stock<=p.reorder).length,'Across '+new Set(products.filter(p=>p.stock<=p.reorder).map(p=>p.vendor)).size+' vendors','!'],['Open purchase orders','3','Awaiting delivery','↓']])}<div class="toolbar" style="margin-top:16px"><label class="search-box"><span class="search-glyph">⌕</span><input id="tableSearch" placeholder="Search vendors" value="${escapeHtml(search)}"></label><button class="secondary-button" data-action="notify">Send low-stock notices</button></div><section class="panel table-panel"><div class="table-wrap"><table class="data-table"><thead><tr><th>Vendor</th><th>Contact</th><th>Email</th><th>Products</th><th>Lead time</th><th>Status</th><th>Action</th></tr></thead><tbody id="vendorTableBody">${vendors.map(v=>`<tr><td class="product-name">${escapeHtml(v.name)}</td><td>${escapeHtml(v.contact)}</td><td>${escapeHtml(v.email)}</td><td class="qty">${v.products}</td><td>${escapeHtml(v.lead)}</td><td>${pill(v.status)}</td><td><button class="small-button" data-vendor="${escapeHtml(v.name)}">Email vendor</button></td></tr>`).join('')}</tbody></table></div></section>`;}
     if(active==='Day-End'){const sales=transactions.filter(t=>t.type==='Sale').reduce((s,t)=>s+t.amount,0),refund=transactions.filter(t=>t.type==='Refund').reduce((s,t)=>s+t.amount,0);return `${heading('Day-end accounting','Daily sales, refunds, and inventory movement in one place.','<button class="primary-button" data-action="close-day">Close today</button>')}${stats([['Gross sales',money(sales),'Completed transactions','↗'],['Refunds',money(refund),'Customer returns','↩'],['Net sales',money(sales-refund),'Gross sales less refunds','◈'],['Transactions',transactions.length,'All activity today','≡']])}<div class="lower-grid" style="margin-top:16px"><section class="panel"><div class="panel-head"><div><div class="panel-title">Daily reconciliation</div><div class="panel-desc">Today · USD</div></div><span class="pill good">Open</span></div><div class="settings-panel"><div class="setting-row"><span>Sales revenue</span><b>${money(sales)}</b></div><div class="setting-row"><span>Refunds &amp; returns</span><b>− ${money(refund)}</b></div><div class="setting-row"><span>Net revenue</span><b>${money(sales-refund)}</b></div><div class="setting-row"><span>Stock received</span><b>${transactions.filter(t=>t.type==='Stock In').reduce((s,t)=>s+t.quantity,0)} units</b></div><div class="setting-row"><span>Stock adjusted out</span><b>${transactions.filter(t=>t.type==='Stock Out').reduce((s,t)=>s+t.quantity,0)} units</b></div></div></section><section class="panel"><div class="panel-head"><div><div class="panel-title">Close-of-day checklist</div><div class="panel-desc">Review before finalizing</div></div></div><div class="settings-panel"><div class="setting-row"><span>Transactions reconciled</span>${pill('Complete')}</div><div class="setting-row"><span>Refunds reviewed</span>${pill('Complete')}</div><div class="setting-row"><span>Low-stock items reviewed</span>${pill(products.some(p=>p.stock<=p.reorder)?'Pending':'Complete')}</div><div class="setting-row"><span>Audit log up to date</span>${pill('Complete')}</div></div></section></div>`;}
-    if(active==='Users & Roles'){return `${heading('Users & roles','Manage access and protect sensitive operations.','<button class="primary-button" data-action="user">＋ Invite user</button>')}<div class="section-grid" style="margin-top:8px">${[['Configured roles',String(availableRoles.length),'Accounts configured on this server'],['Role types','3','Administrator · Manager · Staff'],['Access policy','Role-based','Least-privilege access']].map(a=>`<article class="panel info-panel"><div class="info-label">${a[0]}</div><div class="info-number">${a[1]}</div><div class="info-foot">${a[2]}</div></article>`).join('')}</div><div class="settings-grid"><section class="panel settings-panel"><h2>Configured roles</h2>${availableRoles.map(role=>`<div class="setting-row"><span><b>${escapeHtml(role)}</b></span><span>Configured</span></div>`).join('')||'<div class="empty-state">No role accounts are configured on this server.</div>'}</section><section class="panel settings-panel"><h2>Role permissions</h2>${[['Administrator','Full system access'],['Manager','Inventory, sales, reports'],['Staff','Stock movement, sales']].map(([n,d])=>`<div class="setting-row"><span><b>${n}</b></span><span>${d}</span></div>`).join('')}</section></div>`;}
+    if(active==='Users & Roles'){return `${heading('Users & roles','Manage accounts in this organization.','<button class="primary-button" data-action="user">＋ Add user</button>')}<div class="section-grid" style="margin-top:8px">${[['Organization users',String(organizationUsers.length),'Accounts in this workspace'],['Role types','3','Administrator · Manager · Staff'],['Access policy','Role-based','Least-privilege access']].map(a=>`<article class="panel info-panel"><div class="info-label">${a[0]}</div><div class="info-number">${a[1]}</div><div class="info-foot">${a[2]}</div></article>`).join('')}</div><section class="panel table-panel"><div class="panel-head"><div><div class="panel-title">Organization users</div><div class="panel-desc">Sign-in accounts and assigned roles</div></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Name</th><th>Email</th><th>Role</th></tr></thead><tbody>${organizationUsers.map(user=>`<tr><td class="product-name">${escapeHtml(user.name)}</td><td>${escapeHtml(user.email)}</td><td>${escapeHtml(user.role)}</td></tr>`).join('')||'<tr><td colspan="3" class="empty-state">No users have been added.</td></tr>'}</tbody></table></div></section><section class="panel settings-panel" style="margin-top:14px"><h2>Role permissions</h2>${[['Administrator','Full system access'],['Manager','Inventory, sales, reports'],['Staff','Stock movement, sales']].map(([n,d])=>`<div class="setting-row"><span><b>${n}</b></span><span>${d}</span></div>`).join('')}</section>`;}
     if(active==='Notifications'){const lowProducts=products.filter(p=>p.stock<=p.reorder);return `${heading('Notifications','Automated vendor alerts and system notices.','<button class="primary-button" data-action="notify">Send low-stock notices</button>')}${stats([['Low-stock alerts',lowProducts.length,'Products below reorder point','!'],['Vendors notified',new Set(lowProducts.map(p=>p.vendor)).size,'Eligible suppliers','◇'],['Email delivery','Configured','Vendor notifications enabled','✉']])}<section class="panel table-panel" style="margin-top:16px"><div class="panel-head"><div><div class="panel-title">Reorder alerts</div><div class="panel-desc">Threshold-based vendor notifications</div></div></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Product</th><th>On hand</th><th>Reorder at</th><th>Vendor</th><th>Contact</th><th>Status</th></tr></thead><tbody>${lowProducts.map(p=>{const v=vendors.find(x=>x.name===p.vendor);return `<tr><td><div class="product-name">${escapeHtml(p.name)}</div><div class="product-sku">${escapeHtml(p.id)}</div></td><td class="qty">${p.stock}</td><td class="qty">${p.reorder}</td><td>${escapeHtml(p.vendor)}</td><td>${escapeHtml(v?.email||'No vendor email')}</td><td>${pill('Pending')}</td></tr>`;}).join('')||'<tr><td colspan="6" class="empty-state">No products need reordering.</td></tr>'}</tbody></table></div></section><section class="panel settings-panel" style="margin-top:14px"><h2>Email preferences</h2><div class="setting-row"><span>Automatically email vendor at reorder point</span><span>${pill('Enabled')}</span></div><div class="setting-row"><span>Daily inventory summary</span><span>${pill('Enabled')}</span></div></section>`;}
     if(active==='Reports'){return `${heading('Reports & exports','Operational, financial, and inventory reporting.')}<div class="section-grid" style="margin-top:8px">${[['Inventory valuation','Current quantity × unit cost','Export inventory'],['Sales summary','Sales and refunds by transaction','Export transactions'],['Stock movement','Receipts, adjustments, and returns','Export movement']].map((r,i)=>`<article class="panel info-panel"><div class="info-label">REPORT 0${i+1}</div><div class="info-number" style="font-size:16px">${r[0]}</div><div class="info-foot" style="margin:7px 0 15px">${r[1]}</div><button class="secondary-button" data-export="${i}">${r[2]} ↓</button></article>`).join('')}</div><section class="panel settings-panel"><h2>Report contents</h2><div class="setting-row"><span>Inventory value</span><b>${money(products.reduce((s,p)=>s+p.stock*p.cost,0))}</b></div><div class="setting-row"><span>Sales recorded</span><b>${transactions.filter(t=>t.type==='Sale').length} transactions</b></div><div class="setting-row"><span>Current low-stock products</span><b>${products.filter(p=>p.stock<=p.reorder).length} items</b></div></section>`;}
     if(active==='Audit Log'){return `${heading('Audit log','A traceable record of important system activity.','<button class="secondary-button" data-export="audit">Export log ↓</button>')}<div class="toolbar" style="margin-top:2px"><label class="search-box"><span class="search-glyph">⌕</span><input id="tableSearch" placeholder="Search activity" value="${escapeHtml(search)}"></label><span class="mini-metric">${audit.length} events · retained locally</span></div><section class="panel table-panel"><div class="table-wrap"><table class="data-table"><thead><tr><th>Activity</th><th>Details</th><th>User</th><th>Timestamp</th></tr></thead><tbody id="auditTableBody">${audit.map(a=>`<tr><td class="product-name">${escapeHtml(a.action)}</td><td>${escapeHtml(a.detail)}</td><td>${escapeHtml(a.user)}</td><td class="qty">${escapeHtml(a.time)}</td></tr>`).join('')}</tbody></table></div></section>`;}
@@ -483,7 +515,28 @@
       showToast(product.expiryDate?'Expiry date saved.':'Expiry date cleared.');
     });
   }
+  async function loadOrganizationUsers(){
+    organizationUsersLoading=true;
+    try{
+      const response=await fetch('/api/users');
+      const result=await response.json();
+      if(!response.ok)throw new Error(result.error||'Could not load organization users.');
+      organizationUsers=result.users||[];
+      const organization=organizations.find(item=>item.id===workspaceId);
+      if(organization){
+        organization.roles=[...new Set([...organization.roles,...organizationUsers.map(user=>user.role)])];
+        availableRoles=organization.roles;
+      }
+    }catch(error){
+      showToast(error.message||'Could not load organization users.');
+    }finally{
+      organizationUsersLoaded=true;
+      organizationUsersLoading=false;
+      if(active==='Users & Roles')render();
+    }
+  }
   function render(){
+    if(active==='Users & Roles'&&currentUser?.role==='Administrator'&&!organizationUsersLoaded&&!organizationUsersLoading){loadOrganizationUsers();return;}
     refreshExpiryAlerts();
     $('page').innerHTML=active==='Overview'?renderDashboard():active==='Vendor Bills'?renderVendorBillsPage():active==='Day-End'?renderDayEndPage():modulePage();
     if(active==='Day-End')$('page').insertAdjacentHTML('beforeend',renderBillLedger()+renderDayEndReportHistory());
@@ -506,7 +559,24 @@
   function filterTables(){const query=(search||'').toLowerCase();if($('productTableBody')){const stockFilter=$('stockFilter')?.value||'All stock levels',category=$('categoryFilter')?.value||'All categories';const list=products.filter(p=>(p.name+' '+p.id+' '+p.vendor).toLowerCase().includes(query)&&(stockFilter==='All stock levels'||(stockFilter==='Low stock'?p.stock<=p.reorder:p.stock>p.reorder))&&(category==='All categories'||p.category===category));$('productTableBody').innerHTML=productRows(list)||'<tr><td colspan="7" class="empty-state">No matching products.</td></tr>';if($('rowCount'))$('rowCount').textContent=list.length+' products';}if($('vendorTableBody'))$('vendorTableBody').innerHTML=vendors.filter(v=>(v.name+' '+v.contact+' '+v.email).toLowerCase().includes(query)).map(v=>`<tr><td class="product-name">${escapeHtml(v.name)}</td><td>${escapeHtml(v.contact)}</td><td>${escapeHtml(v.email)}</td><td class="qty">${v.products}</td><td>${escapeHtml(v.lead)}</td><td>${pill(v.status)}</td><td><button class="small-button" data-vendor="${escapeHtml(v.name)}">Email vendor</button></td></tr>`).join('');if($('transactionTableBody'))$('transactionTableBody').innerHTML=transactionRows(transactions.filter(t=>t.type===(active==='Refunds'?'Refund':'Sale')).filter(t=>(t.product+' '+t.id+' '+t.reference).toLowerCase().includes(query)))||'<tr><td colspan="8" class="empty-state">No matching transactions.</td></tr>';if($('auditTableBody'))$('auditTableBody').innerHTML=audit.filter(a=>(a.action+' '+a.detail+' '+a.user).toLowerCase().includes(query)).map(a=>`<tr><td class="product-name">${escapeHtml(a.action)}</td><td>${escapeHtml(a.detail)}</td><td>${escapeHtml(a.user)}</td><td class="qty">${escapeHtml(a.time)}</td></tr>`).join('');document.querySelectorAll('[data-vendor]').forEach(button=>button.addEventListener('click',()=>notifyVendor(button.dataset.vendor)));}
   function openModal(type){const config={product:['Add product','Create an inventory record.'],stockin:['Receive stock','Add delivered units to inventory.'],stockout:['Record stock adjustment','Remove damaged, lost, or transferred units.'],sale:['Record a sale','Record a completed customer sale.'],refund:['Process a refund','Return units to inventory and record the refund.'],vendor:['Add vendor','Add a supplier to your vendor directory.'],user:['Invite team member','Add a user and assign an access role.']};if(!config[type]){showToast('Quick action is available from the relevant module.');return;}const [title,subtitle]=config[type],productField=(type==='stockin'||type==='stockout'||type==='sale'||type==='refund')?`<div class="field full"><label for="txProduct">Product</label><select id="txProduct" required>${products.map(p=>`<option value="${escapeHtml(p.id)}">${escapeHtml(p.name)} · ${escapeHtml(p.id)} · ${p.stock} on hand</option>`).join('')}</select></div><div class="field"><label for="txQty">Quantity</label><input id="txQty" type="number" min="1" step="1" value="1" required></div>${type==='stockin'?'<div class="field"><label for="txRef">Purchase order</label><input id="txRef" placeholder="PO-0000"></div>':type==='stockout'?'<div class="field"><label for="txRef">Reason</label><select id="txRef"><option>Adjustment</option><option>Damaged</option><option>Transfer</option><option>Loss</option></select></div>':type==='sale'?'<div class="field"><label for="txRef">Order reference</label><input id="txRef" placeholder="SO-0000"></div>':'<div class="field"><label for="txRef">Refund reference</label><input id="txRef" placeholder="RF-0000"></div>'}`:'';const fields=type==='product'?`<div class="field full"><label for="newName">Product name</label><input id="newName" required placeholder="Product name"></div><div class="field"><label for="newSku">SKU</label><input id="newSku" required placeholder="PR-0000"></div><div class="field"><label for="newCategory">Category</label><input id="newCategory" required placeholder="Home"></div><div class="field"><label for="newStock">Opening stock</label><input id="newStock" type="number" min="0" value="0"></div><div class="field"><label for="newReorder">Reorder point</label><input id="newReorder" type="number" min="0" value="10"></div><div class="field"><label for="newCost">Unit cost ($)</label><input id="newCost" type="number" min="0" step="0.01" required></div><div class="field"><label for="newPrice">Sale price ($)</label><input id="newPrice" type="number" min="0" step="0.01" required></div><div class="field full"><label for="newVendor">Vendor</label><select id="newVendor">${vendors.map(v=>`<option>${escapeHtml(v.name)}</option>`).join('')}</select></div>`:type==='vendor'?'<div class="field full"><label for="vendorName">Vendor name</label><input id="vendorName" required></div><div class="field"><label for="vendorContact">Contact name</label><input id="vendorContact" required></div><div class="field"><label for="vendorEmail">Email</label><input id="vendorEmail" type="email" required></div><div class="field"><label for="vendorLead">Lead time</label><input id="vendorLead" placeholder="5 days"></div>':type==='user'?'<div class="field full"><label for="userName">Full name</label><input id="userName" required></div><div class="field"><label for="userEmail">Email</label><input id="userEmail" type="email" required></div><div class="field"><label for="userRole">Role</label><select id="userRole"><option>Staff</option><option>Manager</option><option>Administrator</option></select></div>':productField; $('overlay').innerHTML=`<div class="modal-backdrop" id="modalBackdrop"><form class="modal" id="entryForm"><div class="modal-head"><div><h2>${title}</h2><div class="modal-subtitle">${subtitle}</div></div><button type="button" class="close-button" id="closeModal" aria-label="Close">×</button></div><div class="form-grid">${fields}</div><div class="modal-actions"><button type="button" class="secondary-button" id="cancelModal">Cancel</button><button type="submit" class="primary-button">${type==='product'?'Add product':type==='vendor'?'Add vendor':type==='user'?'Send invite':'Save transaction'}</button></div></form></div>`;$('closeModal').addEventListener('click',closeModal);$('cancelModal').addEventListener('click',closeModal);$('modalBackdrop').addEventListener('click',e=>{if(e.target.id==='modalBackdrop')closeModal();});$('entryForm').addEventListener('submit',e=>{e.preventDefault();submitModal(type);});}
   function closeModal(){$('overlay').innerHTML='';}
-  function submitModal(type){if(type==='product'){const id=$('newSku').value.trim();if(products.some(p=>p.id.toLowerCase()===id.toLowerCase())){showToast('That SKU already exists.');return;}const name=$('newName').value.trim();products.unshift({id,name,category:$('newCategory').value.trim(),vendor:$('newVendor').value,stock:Number($('newStock').value),reorder:Number($('newReorder').value),cost:Number($('newCost').value),price:Number($('newPrice').value),updated:'Today'});logAudit('Product created',`${name} · ${id}`);save();closeModal();render();showToast('Product added to inventory.');return;}if(type==='vendor'){const name=$('vendorName').value.trim();vendors.push({name,contact:$('vendorContact').value.trim(),email:$('vendorEmail').value.trim(),products:0,lead:$('vendorLead').value.trim()||'Not set',status:'Active'});logAudit('Vendor added',name);save();closeModal();render();showToast('Vendor added.');return;}if(type==='user'){logAudit('User invited',`${$('userEmail').value} · ${$('userRole').value}`);closeModal();showToast('Invitation recorded.');return;}const product=products.find(p=>p.id===$('txProduct').value),quantity=Number($('txQty').value),kind={stockin:'Stock In',stockout:'Stock Out',sale:'Sale',refund:'Refund'}[type];if(!product||!quantity)return;if(['Stock Out','Sale'].includes(kind)&&quantity>product.stock){showToast('Quantity exceeds available stock.');return;}if(kind==='Stock In'||kind==='Refund')product.stock+=quantity;else product.stock-=quantity;product.updated='Today';const reference=$('txRef').value.trim()||({ 'Stock In':'PO-'+Math.floor(3100+Math.random()*899),'Stock Out':'ADJ-'+Math.floor(100+Math.random()*899),'Sale':'SO-'+Math.floor(8800+Math.random()*99),'Refund':'RF-'+Math.floor(200+Math.random()*99)}[kind]);const amount=quantity*product.price;transactions.unshift({id:'TX-'+(2088+transactions.length),type:kind,product:product.name,sku:product.id,quantity,amount,date:'Today, '+new Intl.DateTimeFormat('en-US',{hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date()),user:'Alex Morgan',reference});logAudit(kind==='Stock In'?'Stock received':kind==='Stock Out'?'Inventory adjusted':kind==='Sale'?'Sale recorded':'Refund approved',`${quantity} × ${product.name}${kind==='Stock Out'?' · '+reference:''}`);save();closeModal();render();showToast(`${kind} recorded. Stock is now ${product.stock}.`);}
+  function submitModal(type){if(type==='product'){const id=$('newSku').value.trim();if(products.some(p=>p.id.toLowerCase()===id.toLowerCase())){showToast('That SKU already exists.');return;}const name=$('newName').value.trim();products.unshift({id,name,category:$('newCategory').value.trim(),vendor:$('newVendor').value,stock:Number($('newStock').value),reorder:Number($('newReorder').value),cost:Number($('newCost').value),price:Number($('newPrice').value),updated:'Today'});logAudit('Product created',`${name} · ${id}`);save();closeModal();render();showToast('Product added to inventory.');return;}if(type==='vendor'){const name=$('vendorName').value.trim();vendors.push({name,contact:$('vendorContact').value.trim(),email:$('vendorEmail').value.trim(),products:0,lead:$('vendorLead').value.trim()||'Not set',status:'Active'});logAudit('Vendor added',name);save();closeModal();render();showToast('Vendor added.');return;}if(type==='user'){createOrganizationUser();return;}const product=products.find(p=>p.id===$('txProduct').value),quantity=Number($('txQty').value),kind={stockin:'Stock In',stockout:'Stock Out',sale:'Sale',refund:'Refund'}[type];if(!product||!quantity)return;if(['Stock Out','Sale'].includes(kind)&&quantity>product.stock){showToast('Quantity exceeds available stock.');return;}if(kind==='Stock In'||kind==='Refund')product.stock+=quantity;else product.stock-=quantity;product.updated='Today';const reference=$('txRef').value.trim()||({ 'Stock In':'PO-'+Math.floor(3100+Math.random()*899),'Stock Out':'ADJ-'+Math.floor(100+Math.random()*899),'Sale':'SO-'+Math.floor(8800+Math.random()*99),'Refund':'RF-'+Math.floor(200+Math.random()*99)}[kind]);const amount=quantity*product.price;transactions.unshift({id:'TX-'+(2088+transactions.length),type:kind,product:product.name,sku:product.id,quantity,amount,date:'Today, '+new Intl.DateTimeFormat('en-US',{hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date()),user:'Alex Morgan',reference});logAudit(kind==='Stock In'?'Stock received':kind==='Stock Out'?'Inventory adjusted':kind==='Sale'?'Sale recorded':'Refund approved',`${quantity} × ${product.name}${kind==='Stock Out'?' · '+reference:''}`);save();closeModal();render();showToast(`${kind} recorded. Stock is now ${product.stock}.`);}
+  async function createOrganizationUser(){
+    const button=$('entryForm').querySelector('[type="submit"]');
+    button.disabled=true;
+    try{
+      const response=await fetch('/api/users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:$('userName').value,email:$('userEmail').value,password:$('userPassword').value,role:$('userRole').value})});
+      const result=await response.json();
+      if(!response.ok)throw new Error(result.error||'Could not create user.');
+      organizationUsersLoaded=false;
+      closeModal();
+      await loadOrganizationUsers();
+      render();
+      showToast('Organization user created.');
+    }catch(error){
+      button.disabled=false;
+      showToast(error.message||'Could not create user.');
+    }
+  }
   function generateProductSku(){
     const highest=products.reduce((current,product)=>{
       const match=/^PR-(\d+)$/i.exec(product.id);
@@ -525,6 +595,11 @@
       skuInput.readOnly=true;
       skuInput.setAttribute('aria-readonly','true');
       $('entryForm')?.querySelector('.form-grid')?.insertAdjacentHTML('beforeend','<div class="field"><label for="newExpiry">Expiry date</label><input id="newExpiry" type="date"></div>');
+      return;
+    }
+    if(type==='user'){
+      $('entryForm').querySelector('.form-grid').insertAdjacentHTML('beforeend','<div class="field full"><label for="userPassword">Temporary password</label><input id="userPassword" type="password" minlength="12" maxlength="128" autocomplete="new-password" required><small class="auth-help">At least 12 characters. Share it with the user securely.</small></div>');
+      $('entryForm').querySelector('[type="submit"]').textContent='Create user';
       return;
     }
     if(type!=='stockin')return;
@@ -597,8 +672,8 @@
       if(!hasInk)return;
       ownerSignature=canvas.toDataURL('image/png');
       ownerSignatureDate=new Date().toISOString();
-      localStorage.setItem('ledgerlot-owner-signature',JSON.stringify(ownerSignature));
-      localStorage.setItem('ledgerlot-owner-signature-date',JSON.stringify(ownerSignatureDate));
+      localStorage.setItem(storageKey('owner-signature'),JSON.stringify(ownerSignature));
+      localStorage.setItem(storageKey('owner-signature-date'),JSON.stringify(ownerSignatureDate));
       logAudit('Owner digital signature saved','Used for vendor bill copies');
       closeModal();
       render();
@@ -663,14 +738,25 @@
     currentUser=null;
     document.body.classList.add('signed-out');
     setNav();
-    const roleOptions=availableRoles.map(role=>`<option value="${escapeHtml(role)}">${escapeHtml(role)}</option>`).join('')||'<option value="" selected>No roles configured</option>';
-    const help=location.protocol==='file:'?'Open the application at http://127.0.0.1:3000 to sign in.':availableRoles.length?'Use the email and password configured for the selected role.':'Configure at least ADMIN_EMAIL and ADMIN_PASSWORD in .env, then restart the server.';
-    $('authScreen').innerHTML=`<div class="auth-screen"><section class="auth-panel"><div class="brand"><div class="brand-mark" style="font-size:12px">TZ</div><div><div class="brand-name">TZ Solutions</div><div class="brand-sub">INVENTORY CONTROL</div></div></div><h1 class="auth-title">Sign in</h1><p class="auth-copy">Use your assigned role account to access inventory.</p><form class="auth-form" id="loginForm"><div class="field"><label for="loginRole">Role</label><select id="loginRole" required>${roleOptions}</select></div><div class="field"><label for="loginEmail">Email</label><input id="loginEmail" type="email" autocomplete="username" required></div><div class="field"><label for="loginPassword">Password</label><input id="loginPassword" type="password" autocomplete="current-password" required></div><div class="auth-error" id="authError" role="alert">${escapeHtml(message)}</div><button class="primary-button" type="submit" ${availableRoles.length?'':'disabled'}>Sign in</button></form><p class="auth-help">${escapeHtml(help)}</p></section></div>`;
+    const selectedOrganization=preferredOrganizationId||organizations[0]?.id||'';
+    const organizationOptions=organizations.map(organization=>`<option value="${escapeHtml(organization.id)}" ${organization.id===selectedOrganization?'selected':''}>${escapeHtml(organization.name)}</option>`).join('')||'<option value="">No organizations yet</option>';
+    const selected=organizations.find(organization=>organization.id===selectedOrganization);
+    availableRoles=selected?.roles||[];
+    const roleOptions=availableRoles.map(role=>`<option value="${escapeHtml(role)}">${escapeHtml(role)}</option>`).join('')||'<option value="">No user roles</option>';
+    const help=location.protocol==='file:'?'Open the application at http://127.0.0.1:3000 to sign in.':organizations.length?'Choose your organization, then sign in with your assigned account.':'Create an organization to set up your inventory workspace.';
+    $('authScreen').innerHTML=`<div class="auth-screen"><section class="auth-panel"><div class="brand"><div class="brand-mark" style="font-size:12px">TZ</div><div><div class="brand-name">TZ Solutions</div><div class="brand-sub">INVENTORY CONTROL</div></div></div><h1 class="auth-title" id="authTitle">Sign in</h1><p class="auth-copy">Choose your organization to access its inventory workspace.</p><form class="auth-form" id="loginForm"><div class="field"><label for="loginOrganization">Organization</label><select id="loginOrganization" required>${organizationOptions}</select></div><div class="field"><label for="loginRole">Role</label><select id="loginRole" required>${roleOptions}</select></div><div class="field"><label for="loginEmail">Email</label><input id="loginEmail" type="email" autocomplete="username" value="${escapeHtml(preferredEmail)}" required></div><div class="field"><label for="loginPassword">Password</label><input id="loginPassword" type="password" autocomplete="current-password" required></div><div class="auth-error" id="authError" role="alert">${escapeHtml(message)}</div><button class="primary-button" type="submit" ${availableRoles.length?'':'disabled'}>Sign in</button></form><button class="secondary-button" id="showSignup" type="button" ${location.protocol==='file:'?'disabled':''} style="width:100%;margin-top:10px">Create an organization</button><p class="auth-help">${escapeHtml(help)}</p></section></div>`;
     const loginPanel=$('authScreen').querySelector('.auth-panel');
     loginPanel.setAttribute('role','dialog');
     loginPanel.setAttribute('aria-modal','true');
     loginPanel.setAttribute('aria-labelledby','authTitle');
-    $('authScreen').querySelector('.auth-title').id='authTitle';
+    $('loginOrganization').addEventListener('change',()=>{
+      preferredOrganizationId=$('loginOrganization').value;
+      const organization=organizations.find(item=>item.id===preferredOrganizationId);
+      availableRoles=organization?.roles||[];
+      $('loginRole').innerHTML=availableRoles.map(role=>`<option value="${escapeHtml(role)}">${escapeHtml(role)}</option>`).join('')||'<option value="">No user roles</option>';
+      $('loginForm').querySelector('[type="submit"]').disabled=!availableRoles.length;
+    });
+    $('showSignup').addEventListener('click',()=>renderOrganizationSignup());
     const form=$('loginForm');
     form.addEventListener('submit',async event=>{
       event.preventDefault();
@@ -678,14 +764,48 @@
       submit.disabled=true;
       $('authError').textContent='';
       try{
-        const response=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({role:$('loginRole').value,email:$('loginEmail').value,password:$('loginPassword').value})});
+        const response=await fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({organizationId:$('loginOrganization').value,role:$('loginRole').value,email:$('loginEmail').value,password:$('loginPassword').value})});
         const result=await response.json();
         if(!response.ok){$('authError').textContent=result.error||'Sign-in failed.';submit.disabled=false;return;}
+        preferredOrganizationId=result.user.organizationId;
+        preferredEmail=result.user.email;
         enterApplication(result.user);
       }catch{$('authError').textContent='Could not reach the sign-in service.';submit.disabled=false;}
     });
   }
+  function renderOrganizationSignup(message=''){
+    $('authScreen').innerHTML=`<div class="auth-screen"><section class="auth-panel"><div class="brand"><div class="brand-mark" style="font-size:12px">TZ</div><div><div class="brand-name">TZ Solutions</div><div class="brand-sub">INVENTORY CONTROL</div></div></div><h1 class="auth-title" id="authTitle">Create your organization</h1><p class="auth-copy">Set up a private inventory workspace and its first Administrator account.</p><form class="auth-form" id="signupForm"><div class="field"><label for="signupOrganization">Organization name</label><input id="signupOrganization" minlength="2" maxlength="80" autocomplete="organization" required></div><div class="field"><label for="signupName">Administrator name</label><input id="signupName" minlength="2" maxlength="80" autocomplete="name" required></div><div class="field"><label for="signupEmail">Administrator email</label><input id="signupEmail" type="email" maxlength="254" autocomplete="email" required></div><div class="field"><label for="signupPassword">Password</label><input id="signupPassword" type="password" minlength="12" maxlength="128" autocomplete="new-password" required><small class="auth-help">Use at least 12 characters.</small></div><div class="auth-error" id="authError" role="alert">${escapeHtml(message)}</div><button class="primary-button" type="submit">Create organization</button></form><button class="secondary-button" id="showLogin" type="button" style="width:100%;margin-top:10px">Back to sign in</button></section></div>`;
+    const panel=$('authScreen').querySelector('.auth-panel');
+    panel.setAttribute('role','dialog');
+    panel.setAttribute('aria-modal','true');
+    panel.setAttribute('aria-labelledby','authTitle');
+    $('showLogin').addEventListener('click',()=>renderLogin());
+    $('signupForm').addEventListener('submit',async event=>{
+      event.preventDefault();
+      const form=event.currentTarget,submit=form.querySelector('[type="submit"]');
+      submit.disabled=true;
+      $('authError').textContent='';
+      try{
+        const response=await fetch('/api/organizations',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({organizationName:$('signupOrganization').value,name:$('signupName').value,email:$('signupEmail').value,password:$('signupPassword').value})});
+        const result=await response.json();
+        if(!response.ok){$('authError').textContent=result.error||'Organization signup failed.';submit.disabled=false;return;}
+        const statusResponse=await fetch('/api/status');
+        if(!statusResponse.ok)throw new Error('Organization was created, but the login list could not be refreshed. Return to sign in and reload the page.');
+        const status=await statusResponse.json();
+        organizations=status.organizations||[];
+        preferredOrganizationId=result.organization.id;
+        preferredEmail=$('signupEmail').value.trim();
+        renderLogin('Organization created. Sign in with your Administrator account.');
+      }catch(error){$('authError').textContent=error.message||'Could not reach the sign-up service.';submit.disabled=false;}
+    });
+  }
   function enterApplication(user){
+    loadWorkspaceData(user.organizationId);
+    remoteWorkspaceLoaded=user.organizationId==='legacy';
+    availableRoles=organizations.find(item=>item.id===user.organizationId)?.roles||[user.role];
+    organizationUsers=[];
+    organizationUsersLoaded=false;
+    organizationUsersLoading=false;
     applyLoggedUser(user);
     serverAuthEvents=[];
     authAuditLoaded=false;
@@ -705,7 +825,8 @@
     try{
       const statusResponse=await fetch('/api/status');
       const status=await statusResponse.json();
-      availableRoles=status.availableRoles||[];
+      organizations=status.organizations||[];
+      preferredOrganizationId=organizations[0]?.id||'';
       const sessionResponse=await fetch('/api/session');
       const session=await sessionResponse.json();
       if(session.authenticated&&session.user)enterApplication(session.user);
