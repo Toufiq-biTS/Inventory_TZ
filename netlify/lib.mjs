@@ -5,7 +5,7 @@ import { getStore as openStore } from '@netlify/blobs';
 const inventoryStoreName = 'tz-solutions-inventory';
 const sessionStoreName = 'tz-solutions-sessions';
 const sessionLifetimeMs = 8 * 60 * 60 * 1000;
-const defaultDatabase = { products: [], vendors: [], sentAlerts: {}, authAudit: [], dayEndReports: [] };
+const defaultDatabase = { products: [], vendors: [], sentAlerts: {}, authAudit: [], dayEndReports: [], organizations: [], workspaces: {} };
 const gmailConfigured = Boolean(process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD);
 const mailTransporter = gmailConfigured ? nodemailer.createTransport({
   service: 'gmail',
@@ -21,6 +21,43 @@ export function roleAccounts() {
     { role: 'Manager', email: process.env.MANAGER_EMAIL, password: process.env.MANAGER_PASSWORD, name: process.env.MANAGER_NAME || 'Inventory Manager' },
     { role: 'Staff', email: process.env.STAFF_EMAIL, password: process.env.STAFF_PASSWORD, name: process.env.STAFF_NAME || 'Inventory Staff' }
   ].filter(account => account.email && account.password);
+}
+
+export function organizationList(database) {
+  database.organizations ||= [];
+  if (roleAccounts().length && !database.organizations.some(item => item.id === 'legacy')) {
+    database.organizations.unshift({ id: 'legacy', name: 'TZ Solutions', users: [] });
+  }
+  return database.organizations;
+}
+
+export function organizationWorkspace(database, organizationId) {
+  if (organizationId === 'legacy') return database;
+  database.workspaces ||= {};
+  database.workspaces[organizationId] ||= { products: [], vendors: [], sentAlerts: {}, authAudit: [], dayEndReports: [] };
+  return database.workspaces[organizationId];
+}
+
+export function organizationRoles(organization) {
+  return [...new Set([
+    ...(organization.id === 'legacy' ? roleAccounts().map(account => account.role) : []),
+    ...(organization.users || []).map(user => user.role)
+  ])];
+}
+
+export function passwordRecord(password) {
+  const salt = crypto.randomBytes(16).toString('base64url');
+  return { salt, hash: crypto.scryptSync(password, salt, 64).toString('base64url') };
+}
+
+export function passwordRecordMatches(password, record) {
+  const expected = Buffer.from(record.hash, 'base64url');
+  const provided = crypto.scryptSync(String(password), record.salt, expected.length);
+  return expected.length === provided.length && crypto.timingSafeEqual(provided, expected);
+}
+
+export function validEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && email.length <= 254;
 }
 
 export function response(status, data, headers = {}) {
@@ -42,8 +79,9 @@ export async function writeDatabase(database) {
 }
 
 export function recordAuthentication(database, action, user) {
-  database.authAudit ||= [];
-  database.authAudit.unshift({
+  const workspace = organizationWorkspace(database, user.organizationId || 'legacy');
+  workspace.authAudit ||= [];
+  workspace.authAudit.unshift({
     id: crypto.randomUUID(),
     action,
     user: user.name,
@@ -51,7 +89,7 @@ export function recordAuthentication(database, action, user) {
     email: user.email,
     time: new Date().toISOString()
   });
-  database.authAudit = database.authAudit.slice(0, 1000);
+  workspace.authAudit = workspace.authAudit.slice(0, 1000);
 }
 
 function passwordMatches(provided, expected) {
@@ -78,7 +116,7 @@ export async function getSession(request) {
     await store.delete(token);
     return null;
   }
-  return { ...session, token };
+  return { ...session, user: { ...session.user, organizationId: session.user.organizationId || 'legacy' }, token };
 }
 
 export async function deleteSession(token) {

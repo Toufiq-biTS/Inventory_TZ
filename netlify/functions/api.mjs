@@ -3,12 +3,18 @@ import {
   createSession,
   deleteSession,
   getSession,
+  organizationList,
+  organizationRoles,
+  organizationWorkspace,
+  passwordRecord,
+  passwordRecordMatches,
   readDatabase,
   recordAuthentication,
   response,
   roleAccounts,
   sendExpiryEmails,
   sessionCookie,
+  validEmail,
   writeDatabase
 } from '../lib.mjs';
 import { getStore } from '@netlify/blobs';
@@ -64,10 +70,16 @@ export default async request => {
   const method = request.method;
 
   if (method === 'GET' && route === '/status') {
+    const database = await readDatabase();
+    const organizations = organizationList(database).map(organization => ({
+      id: organization.id,
+      name: organization.name,
+      roles: organizationRoles(organization)
+    }));
     return response(200, {
       gmailConfigured: Boolean(process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD),
-      loginConfigured: roleAccounts().length > 0,
-      availableRoles: roleAccounts().map(account => account.role)
+      loginConfigured: organizations.some(organization => organization.roles.length),
+      organizations
     });
   }
 
@@ -82,15 +94,26 @@ export default async request => {
       if (limit.blocked) return response(429, { error: 'Too many failed attempts. Try again in five minutes.' });
       const payload = await request.json();
       const email = String(payload.email || '').trim().toLowerCase();
-      const account = roleAccounts().find(item => item.role === String(payload.role || '') && item.email.trim().toLowerCase() === email);
-      if (!account || !secureCompare(payload.password || '', account.password)) {
+      const database = await readDatabase();
+      const organization = organizationList(database).find(item => item.id === String(payload.organizationId || ''));
+      const role = String(payload.role || '');
+      const configuredAccount = organization?.id === 'legacy'
+        ? roleAccounts().find(item => item.role === role && item.email.trim().toLowerCase() === email)
+        : null;
+      const organizationAccount = organization
+        ? (organization.users || []).find(item => item.role === role && item.email.toLowerCase() === email)
+        : null;
+      const account = configuredAccount || organizationAccount;
+      const passwordValid = configuredAccount
+        ? secureCompare(payload.password || '', configuredAccount.password)
+        : organizationAccount && passwordRecordMatches(payload.password || '', organizationAccount.password);
+      if (!account || !passwordValid) {
         const count = Math.min((limit.attempt?.count || 0) + 1, 5);
         await limit.store.setJSON(limit.key, { count, lockedUntil: count >= 5 ? Date.now() + 5 * 60 * 1000 : 0 });
         return response(401, { error: 'Email, password, or role did not match.' });
       }
       await limit.store.delete(limit.key);
-      const user = { name: account.name, email: account.email, role: account.role };
-      const database = await readDatabase();
+      const user = { name: account.name, email: account.email, role: account.role, organizationId: organization.id };
       recordAuthentication(database, 'User logged in', user);
       await writeDatabase(database);
       const token = await createSession(user);
@@ -99,6 +122,73 @@ export default async request => {
       console.error(`Login failed: ${error.message}`);
       return response(400, { error: 'Could not complete sign-in.' });
     }
+  }
+
+  if (method === 'POST' && route === '/organizations') {
+    try {
+      const payload = await request.json();
+      const name = String(payload.organizationName || '').trim();
+      const userName = String(payload.name || '').trim();
+      const email = String(payload.email || '').trim().toLowerCase();
+      const password = String(payload.password || '');
+      if (name.length < 2 || name.length > 80) return response(400, { error: 'Organization name must be between 2 and 80 characters.' });
+      if (userName.length < 2 || userName.length > 80) return response(400, { error: 'Administrator name must be between 2 and 80 characters.' });
+      if (!validEmail(email)) return response(400, { error: 'Enter a valid email address.' });
+      if (password.length < 12 || password.length > 128) return response(400, { error: 'Password must be between 12 and 128 characters.' });
+      const database = await readDatabase();
+      const organizations = organizationList(database);
+      if (organizations.some(item => item.name.toLowerCase() === name.toLowerCase())) return response(409, { error: 'An organization with that name already exists.' });
+      const organization = {
+        id: crypto.randomUUID(),
+        name,
+        users: [{ id: crypto.randomUUID(), name: userName, email, role: 'Administrator', password: passwordRecord(password) }]
+      };
+      organizations.push(organization);
+      organizationWorkspace(database, organization.id);
+      await writeDatabase(database);
+      return response(201, { organization: { id: organization.id, name: organization.name } });
+    } catch (error) {
+      console.error(`Organization signup failed: ${error.message}`);
+      return response(400, { error: 'Could not create organization.' });
+    }
+  }
+
+  if (route === '/users') {
+    const session = await getSession(request);
+    if (!session) return response(401, { error: 'Sign in to manage users.' });
+    if (session.user.role !== 'Administrator') return response(403, { error: 'Only Administrators can manage users.' });
+    const database = await readDatabase();
+    const organization = organizationList(database).find(item => item.id === session.user.organizationId);
+    if (!organization) return response(404, { error: 'Organization not found.' });
+    if (method === 'GET') {
+      return response(200, { users: (organization.users || []).map(({ id, name, email, role }) => ({ id, name, email, role })) });
+    }
+    if (method === 'POST') {
+      try {
+        const payload = await request.json();
+        const name = String(payload.name || '').trim();
+        const email = String(payload.email || '').trim().toLowerCase();
+        const password = String(payload.password || '');
+        const role = String(payload.role || '');
+        if (name.length < 2 || name.length > 80) return response(400, { error: 'User name must be between 2 and 80 characters.' });
+        if (!validEmail(email)) return response(400, { error: 'Enter a valid email address.' });
+        if (password.length < 12 || password.length > 128) return response(400, { error: 'Password must be between 12 and 128 characters.' });
+        if (!['Administrator', 'Manager', 'Staff'].includes(role)) return response(400, { error: 'Choose a valid user role.' });
+        organization.users ||= [];
+        if (organization.id === 'legacy' && roleAccounts().some(account => account.email.trim().toLowerCase() === email)) {
+          return response(409, { error: 'That email is already registered in this organization.' });
+        }
+        if (organization.users.some(user => user.email.toLowerCase() === email)) return response(409, { error: 'That email is already registered in this organization.' });
+        const user = { id: crypto.randomUUID(), name, email, role, password: passwordRecord(password) };
+        organization.users.push(user);
+        await writeDatabase(database);
+        return response(201, { user: { id: user.id, name, email, role } });
+      } catch (error) {
+        console.error(`User creation failed: ${error.message}`);
+        return response(400, { error: 'Could not create user.' });
+      }
+    }
+    return response(405, { error: 'Method not allowed.' });
   }
 
   if (method === 'POST' && route === '/logout') {
@@ -117,7 +207,8 @@ export default async request => {
     if (!session) return response(401, { error: 'Sign in to view authentication activity.' });
     if (!['Administrator', 'Manager'].includes(session.user.role)) return response(403, { error: 'You do not have access to authentication activity.' });
     const database = await readDatabase();
-    return response(200, { events: database.authAudit || [] });
+    const workspace = organizationWorkspace(database, session.user.organizationId);
+    return response(200, { events: workspace.authAudit || [] });
   }
 
   if (route === '/day-end') {
@@ -125,19 +216,20 @@ export default async request => {
     if (!session) return response(401, { error: 'Sign in to access day-end accounting.' });
     if (!['Administrator', 'Manager'].includes(session.user.role)) return response(403, { error: 'You do not have access to day-end accounting.' });
     const database = await readDatabase();
-    database.dayEndReports ||= [];
-    if (method === 'GET') return response(200, { reports: database.dayEndReports });
+    const workspace = organizationWorkspace(database, session.user.organizationId);
+    workspace.dayEndReports ||= [];
+    if (method === 'GET') return response(200, { reports: workspace.dayEndReports });
     if (method === 'POST') {
       try {
         const payload = await request.json();
         if (!validDayEndDate(payload.date)) return response(400, { error: 'A valid business date is required.' });
-        const existing = database.dayEndReports.find(report => report.date === payload.date);
+        const existing = workspace.dayEndReports.find(report => report.date === payload.date);
         if (existing) return response(409, { error: 'Day-end accounting has already been completed for this date.', report: existing });
         const reports = normalizeDayEndReports(payload.reports, payload.date);
         if (!reports) return response(400, { error: 'Exactly four valid daily reports are required.' });
         const report = { date: payload.date, reports, generatedAt: new Date().toISOString(), generatedBy: session.user.name };
-        database.dayEndReports.push(report);
-        database.dayEndReports.sort((left, right) => right.date.localeCompare(left.date));
+        workspace.dayEndReports.push(report);
+        workspace.dayEndReports.sort((left, right) => right.date.localeCompare(left.date));
         await writeDatabase(database);
         return response(201, { report });
       } catch (error) {
@@ -148,16 +240,38 @@ export default async request => {
     return response(405, { error: 'Method not allowed.' });
   }
 
+  if (method === 'GET' && route === '/inventory') {
+    const session = await getSession(request);
+    if (!session) return response(401, { error: 'Sign in to view inventory.' });
+    const database = await readDatabase();
+    const workspace = organizationWorkspace(database, session.user.organizationId);
+    return response(200, {
+      products: workspace.products || [],
+      vendors: workspace.vendors || [],
+      transactions: workspace.transactions || [],
+      bills: workspace.bills || [],
+      audit: workspace.audit || []
+    });
+  }
+
   if (method === 'PUT' && route === '/inventory') {
-    if (!await getSession(request)) return response(401, { error: 'Sign in to synchronize inventory.' });
+    const session = await getSession(request);
+    if (!session) return response(401, { error: 'Sign in to synchronize inventory.' });
     try {
       const payload = await request.json();
       if (!Array.isArray(payload.products) || !Array.isArray(payload.vendors)) return response(400, { error: 'Products and vendors must be arrays.' });
+      for (const key of ['transactions', 'bills', 'audit']) {
+        if (payload[key] !== undefined && !Array.isArray(payload[key])) return response(400, { error: `${key} must be an array.` });
+      }
       const database = await readDatabase();
-      database.products = payload.products;
-      database.vendors = payload.vendors;
+      const workspace = organizationWorkspace(database, session.user.organizationId);
+      workspace.products = payload.products;
+      workspace.vendors = payload.vendors;
+      for (const key of ['transactions', 'bills', 'audit']) {
+        if (payload[key] !== undefined) workspace[key] = payload[key];
+      }
       await writeDatabase(database);
-      const emailResult = await sendExpiryEmails(database);
+      const emailResult = await sendExpiryEmails(workspace);
       await writeDatabase(database);
       return response(200, { ok: true, ...emailResult });
     } catch (error) {
